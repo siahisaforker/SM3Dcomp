@@ -1,22 +1,17 @@
 #!/usr/bin/env python3
 
-"""
-Generate the matching decompilation build.
-
-The user-facing workflow intentionally follows the decomp-toolkit project
-convention:
-
-    python3 configure.py
-    ninja
-    ninja progress
-
-The backend is RPX-specific because decomp-toolkit does not support Wii U RPX
-files. Generated objects are compiled with GHS through wibo/Wine on non-Windows
-hosts, linked at their original addresses, and compared byte-for-byte with the
-corresponding RPX ranges.
-"""
+"""Configure and build the Wii U matching decompilation."""
 
 import argparse
+import urllib.request
+import urllib.error
+import zipfile
+import tempfile
+import tarfile
+import subprocess
+import stat
+import ssl
+import platform
 import hashlib
 import json
 import os
@@ -73,6 +68,7 @@ class Unit:
 class ProjectConfig:
     object: Path
     sha256: str
+    text_address: int
     text_size: int
     symbols: Path
     splits: Path
@@ -164,6 +160,7 @@ def load_project(root: Path, version: str) -> ProjectConfig:
     return ProjectConfig(
         object=Path(config_string(values, path, "object")),
         sha256=config_string(values, path, "sha256").lower(),
+        text_address=config_int(values, path, "text_address"),
         text_size=config_int(values, path, "text_size"),
         symbols=Path(config_string(values, path, "symbols")),
         splits=Path(config_string(values, path, "splits")),
@@ -246,6 +243,27 @@ def load_undefined_maps(root: Path, paths: tuple[Path, ...]) -> dict[str, int]:
             if name in values and values[name] != address:
                 sys.exit(f"{path}:{number}: conflicting address for {name}")
             values[name] = address
+    return values
+
+
+def load_import_maps(root: Path, paths: tuple[Path, ...]) -> dict[str, int]:
+    """Import addresses are local RPX-derived data, absent on clean checkouts."""
+    available = tuple(path for path in paths if (root / path).is_file())
+    if not available:
+        return {}
+    if len(available) != len(paths):
+        missing = [str(path) for path in paths if not (root / path).is_file()]
+        sys.exit("incomplete local import maps: " + ", ".join(missing) +
+                 "\nrun python3 configure.py imports with the original RPX locally")
+    return load_undefined_maps(root, available)
+
+
+def load_linker_symbols(root: Path, project: ProjectConfig) -> dict[str, int]:
+    values = load_undefined_maps(root, project.undefined_maps)
+    for name, address in load_import_maps(root, project.import_maps).items():
+        if name in values and values[name] != address:
+            sys.exit(f"conflicting address for {name} between undefined and import maps")
+        values[name] = address
     return values
 
 
@@ -521,7 +539,7 @@ def configure(args: argparse.Namespace) -> None:
     root = Path(__file__).resolve().parent
     project = load_project(root, args.version)
     symbols = load_symbols(root / project.symbols)
-    undefined = load_undefined_maps(root, project.undefined_maps + project.import_maps)
+    undefined = load_linker_symbols(root, project)
     units = load_units(root, project, symbols)
     build_root = (root / args.build_dir / args.version).resolve()
     try:
@@ -564,7 +582,7 @@ def configure(args: argparse.Namespace) -> None:
         header_files.extend(files_under(root / include_dir,
                                         (".h", ".hh", ".hpp", ".hxx", ".inc")))
     header_files = sorted(set(header_files))
-    download_tool = root / "tools" / "download_tool.py"
+    download_tool = root / "configure.py"
     wiiurpx_sources = [
         root / "CMakeLists.txt",
         *files_under(root / "tools" / "wiiurpxtool"),
@@ -623,7 +641,7 @@ def configure(args: argparse.Namespace) -> None:
         "  restat = 1",
         "",
         "rule download_tool",
-        "  command = $python tools/download_tool.py $tool $out --tag $tag",
+        "  command = $python configure.py download-tool --tool $tool --output $out --tag $tag",
         "  description = download $tool",
         "",
         "rule build_wiiurpxtool",
@@ -790,7 +808,7 @@ def configure(args: argparse.Namespace) -> None:
         f"{slash(project.source_dir)}/**/*",
         *(f"{slash(path)}/**/*" for path in project.include_dirs),
         "CMakeLists.txt",
-        "tools/download_tool.py",
+        "configure.py",
         "tools/wiiurpxtool/**/*",
         "tools/wiiurpxtool-compat/**/*",
     ]
@@ -813,8 +831,6 @@ def configure(args: argparse.Namespace) -> None:
             "target_path": relative_to_root(root, paths["object"]),
             "base_path": relative_to_root(root, paths["base"]),
             "metadata": {
-                # A source-backed split is the RPX equivalent of Object(Matching)
-                # in a decomp-toolkit project.
                 "complete": True,
                 "source_path": unit.source,
                 "progress_categories": [project.progress_category],
@@ -895,7 +911,7 @@ def progress(args: argparse.Namespace) -> None:
     root = Path(__file__).resolve().parent
     project = load_project(root, args.version)
     symbols = load_symbols(root / project.symbols)
-    undefined = load_undefined_maps(root, project.undefined_maps + project.import_maps)
+    undefined = load_linker_symbols(root, project)
     units = load_units(root, project, symbols)
     build_root = (root / args.build_dir / args.version).resolve()
     fresh_sections = {
@@ -1053,12 +1069,494 @@ def make_base(args: argparse.Namespace) -> None:
     args.output.write_bytes(data)
 
 
+PROJECT_ROOT = Path(__file__).resolve().parent
+
+@dataclass(frozen=True)
+class ImportSection:
+    name: str
+    kind: int
+    offset: int
+    size: int
+    link: int
+    entsize: int
+
+
+@dataclass(frozen=True)
+class Import:
+    section: str
+    name: str
+    address: int
+    kind: str
+
+
+def import_error(message):
+    raise ValueError(message)
+
+
+def get_string(data, offset):
+    if offset < 0 or offset >= len(data):
+        import_error("invalid string table offset")
+    end = data.find(b"\0", offset)
+    if end < 0:
+        import_error("unterminated ELF string")
+    return data[offset:end].decode("utf-8")
+
+
+def read_imports(data):
+    if len(data) < 52 or data[:7] != b"\x7fELF\x01\x02\x01":
+        import_error("expected a big-endian ELF32 file")
+    elf_type, machine = struct.unpack_from(">HH", data, 16)
+    if elf_type != 0xFE01 or machine != 20:
+        import_error("expected a Wii U PowerPC RPX ELF")
+    shoff = struct.unpack_from(">I", data, 32)[0]
+    shentsize, shnum, shstrndx = struct.unpack_from(">HHH", data, 46)
+    if shentsize != 40 or shnum == 0 or shstrndx >= shnum:
+        import_error("invalid ELF section headers")
+    if shoff + shnum * shentsize > len(data):
+        import_error("ELF section headers outside file")
+    raw = [struct.unpack_from(">IIIIIIIIII", data, shoff + index * shentsize)
+           for index in range(shnum)]
+
+    def section_data(header):
+        _, kind, _, _, offset, size, _, _, _, _ = header
+        if kind == 8 or offset + size > len(data):
+            import_error("ELF section data outside file")
+        return data[offset:offset + size]
+
+    section_names = section_data(raw[shstrndx])
+    sections = [ImportSection(get_string(section_names, header[0]), header[1], header[4],
+                        header[5], header[6], header[9]) for header in raw]
+    imports = []
+    seen = {}
+    for section_index, section in enumerate(sections):
+        if section.kind != 2:  # SHT_SYMTAB
+            continue
+        if section.entsize != 16 or section.size % section.entsize or section.link >= shnum:
+            import_error("invalid ELF symbol table")
+        strings = section_data(raw[section.link])
+        symbols = section_data(raw[section_index])
+        for offset in range(0, len(symbols), 16):
+            name_offset, address, size, info, other, index = struct.unpack_from(">IIIBBH", symbols, offset)
+            if index >= shnum:
+                continue
+            section_name = sections[index].name
+            if not section_name.startswith((".fimport_", ".dimport_")):
+                continue
+            kind = info & 15
+            binding = info >> 4
+            expected = 2 if section_name.startswith(".fimport_") else 1
+            if kind != expected or binding not in (1, 2):
+                continue
+            name = get_string(strings, name_offset)
+            if not name or any(char.isspace() or char in ";=#" for char in name):
+                import_error("invalid imported symbol name")
+            if name in seen and seen[name] != (address, section_name):
+                import_error(f"conflicting imported symbol {name}")
+            seen[name] = (address, section_name)
+            imports.append(Import(section_name, name, address, "function" if kind == 2 else "data"))
+    if not imports:
+        import_error("no imported symbols found")
+    return sorted(set(imports), key=lambda item: (item.section, item.address, item.name))
+
+
+def import_files(imports):
+    groups = {}
+    for item in imports:
+        suffix = item.section.split("import_", 1)[1].removesuffix(".rpl")
+        name = suffix + ("_data" if item.kind == "data" else "") + ".txt"
+        groups.setdefault(name, []).append(item)
+    rendered = {}
+    for name, entries in sorted(groups.items()):
+        section_name = entries[0].section
+        lines = [f"// RedCarpet.rpx {section_name} symbols.",
+                 "// Generated from the original RPX symbol table. Do not edit manually.", ""]
+        lines += [f"{item.name} = 0x{item.address:08x};" for item in entries]
+        rendered[name] = "\n".join(lines) + "\n"
+    return rendered
+
+
+def generate_import_maps(elf, output, check):
+    expected = import_files(read_imports(elf.read_bytes()))
+    existing = {path.name for path in output.glob("*.txt")}
+    if check:
+        problems = [name for name, text in expected.items()
+                    if not (output / name).is_file() or (output / name).read_text() != text]
+        problems += sorted(existing - expected.keys())
+        if problems:
+            import_error("stale import maps: " + ", ".join(sorted(problems)))
+    else:
+        output.mkdir(parents=True, exist_ok=True)
+        for name, text in expected.items():
+            path = output / name
+            if not path.is_file() or path.read_text() != text:
+                path.write_text(text)
+    print(f"{sum(len(text.splitlines()) - 3 for text in expected.values())} imported symbols "
+          f"in {len(expected)} maps ({'verified' if check else 'generated'})")
+    return sorted(expected)
+
+
+
+SYMBOL_RE = re.compile(
+    r"^([^=\s]+)\s*=\s*(\.[\w.$]+):(0x[0-9a-fA-F]+|\d+)\s*;\s*(?://\s*size:\s*(0x[0-9a-fA-F]+|\d+))?\s*$"
+)
+SPLIT_RE = re.compile(
+    r"^\s+(\.[\w.$]+)\s+start:(0x[0-9a-fA-F]+|\d+)\s+end:(0x[0-9a-fA-F]+|\d+)\s*$"
+)
+
+
+def validation_error(message):
+    raise ValueError(message)
+
+
+def read_validated_symbols(path):
+    result = []
+    seen_names = set()
+    seen_addresses = set()
+    for line_number, original in enumerate(path.read_text().splitlines(), 1):
+        line = original.strip()
+        if not line or line.startswith("#") or line.startswith("//"):
+            continue
+        match = SYMBOL_RE.fullmatch(line)
+        if not match:
+            validation_error(f"{path}:{line_number}: malformed symbol")
+        name, section, raw_address, raw_size = match.groups()
+        if not raw_size:
+            validation_error(f"{path}:{line_number}: function size is required")
+        address, size = int(raw_address, 0), int(raw_size, 0)
+        if name in seen_names or (section, address) in seen_addresses:
+            validation_error(f"{path}:{line_number}: duplicate name or address")
+        if section == ".text" and (address % 4 or size % 4):
+            validation_error(f"{path}:{line_number}: PowerPC instructions must be 4-byte aligned")
+        if size <= 0:
+            validation_error(f"{path}:{line_number}: non-positive function size")
+        seen_names.add(name)
+        seen_addresses.add((section, address))
+        result.append((name, section, address, address + size))
+    return result
+
+
+def read_validated_splits(path, text_start, text_end):
+    result = []
+    current_source = None
+    seen_sources = set()
+    for line_number, original in enumerate(path.read_text().splitlines(), 1):
+        line = original.strip()
+        if not line or line.startswith("#") or line.startswith("//"):
+            continue
+        if not original[:1].isspace() and line.endswith(":"):
+            current_source = line[:-1]
+            if current_source in seen_sources or ".." in Path(current_source).parts:
+                validation_error(f"{path}:{line_number}: duplicate or unsafe source path")
+            seen_sources.add(current_source)
+            if not (PROJECT_ROOT / "src" / current_source).is_file():
+                validation_error(f"{path}:{line_number}: missing source: {current_source}")
+            continue
+        match = SPLIT_RE.fullmatch(original)
+        if current_source is None or not match:
+            validation_error(f"{path}:{line_number}: malformed split")
+        section, raw_start, raw_end = match.groups()
+        start, end = int(raw_start, 0), int(raw_end, 0)
+        if start >= end:
+            validation_error(f"{path}:{line_number}: empty or reversed range")
+        if section == ".text":
+            if start < text_start or end > text_end or start % 4 or end % 4:
+                validation_error(f"{path}:{line_number}: out-of-bounds or unaligned .text")
+        result.append((current_source, section, start, end))
+    if not result:
+        validation_error(f"{path}: no source units")
+    for section in {item[1] for item in result}:
+        ranges = sorted((start, end, source) for source, sec, start, end in result if sec == section)
+        for (_, earlier_end, earlier_source), (start, _, source) in zip(ranges, ranges[1:]):
+            if start < earlier_end:
+                validation_error(f"overlap in {section}: {earlier_source} / {source} at 0x{start:08x}")
+    return result
+
+
+def validate_manifests():
+    project = load_project(PROJECT_ROOT, "US")
+    active = read_validated_symbols(PROJECT_ROOT / "config" / "US" / "symbols.txt")
+    verified = read_validated_symbols(PROJECT_ROOT / "config" / "US" / "verified_symbols.txt")
+    splits = read_validated_splits(PROJECT_ROOT / "config" / "US" / "splits.txt",
+                                    project.text_address, project.text_address + project.text_size)
+    verification = {(section, start, end) for _, section, start, end in verified}
+    active_ranges = sorted((start, end) for _, section, start, end in active if section == ".text")
+    for (_, prev_end), (start, _) in zip(active_ranges, active_ranges[1:]):
+        if start < prev_end:
+            validation_error(f"active symbol overlap at 0x{start:08x}")
+    for name, section, start, end in active:
+        covering = [s for s in splits if s[1] == section and s[2] <= start and end <= s[3]]
+        if len(covering) != 1:
+            validation_error(f"{name}: must be contained in exactly one matching split")
+        if (section, start, end) not in verification:
+            validation_error(f"{name}: no identically bounded verified PowerPC function")
+    for source, section, start, end in splits:
+        if not any(sym_section == section and sym_start >= start and sym_end <= end
+                   for _, sym_section, sym_start, sym_end in active):
+            validation_error(f"{source}: no named function in split 0x{start:08x}-0x{end:08x}")
+    rp = PROJECT_ROOT / "orig" / "US" / "RedCarpet.rpx"
+    if rp.is_file():
+        actual = hashlib.sha256(rp.read_bytes()).hexdigest()
+        if actual != project.sha256:
+            validation_error(f"original executable SHA-256 differs: {actual}")
+    covered = sum(end - start for _, section, start, end in splits if section == ".text")
+    rp_status = "RPX fingerprint verified" if rp.is_file() else "RPX not present"
+    print(f"valid: {len(splits)} split ranges, {len(active)} matching targets, "
+          f"{len(verified)} verified research symbols, {covered} bytes of active text; "
+          f"{rp_status}")
+
+
+
+def wibo_url(tag: str) -> str:
+    machine = platform.machine().lower()
+    if machine == "amd64":
+        machine = "x86_64"
+    if platform.system().lower() == "darwin":
+        machine = "macos"
+    return f"https://github.com/decompals/wibo/releases/download/{tag}/wibo-{machine}"
+
+
+def download(url: str, output: Path, executable: bool = True) -> None:
+    request = urllib.request.Request(url, headers={"User-Agent": "SM3Dcomp"})
+    try:
+        response = urllib.request.urlopen(request)
+    except urllib.error.URLError as error:
+        if "CERTIFICATE_VERIFY_FAILED" not in str(error):
+            raise
+        try:
+            import certifi
+        except ImportError:
+            raise SystemExit(
+                "TLS verification failed; install certifi with "
+                "`python3 -m pip install certifi`"
+            ) from error
+        response = urllib.request.urlopen(
+            request, context=ssl.create_default_context(cafile=certifi.where())
+        )
+
+    output.parent.mkdir(parents=True, exist_ok=True)
+    temporary = output.with_name(output.name + ".tmp")
+    try:
+        with response, temporary.open("wb") as stream:
+            shutil.copyfileobj(response, stream)
+        if executable:
+            mode = os.stat(temporary).st_mode
+            os.chmod(temporary, mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
+        temporary.replace(output)
+    finally:
+        temporary.unlink(missing_ok=True)
+
+
+
+GHIDRA_VERSION = "12.1.2"
+GHIDRA_ARCHIVE = "ghidra_12.1.2_PUBLIC_20260605.zip"
+GHIDRA_URL = (
+    "https://github.com/NationalSecurityAgency/ghidra/releases/download/"
+    f"Ghidra_12.1.2_build/{GHIDRA_ARCHIVE}"
+)
+GHIDRA_SHA256 = "b62e81a0390618466c019c60d8c2f796ced2509c4c1aea4a37644a77272cf99d"
+
+GHIDRARPX_VERSION = "0.9.2"
+GHIDRARPX_ARCHIVE = "GhidraRPXLoader-0.9.2-d496d43-Ghidra_12.0.zip"
+GHIDRARPX_URL = (
+    "https://github.com/Maschell/GhidraRPXLoader/releases/download/"
+    f"v0.9.2/{GHIDRARPX_ARCHIVE}"
+)
+GHIDRARPX_SHA256 = "b010bcc771f224421c8fa370c0023eca1a46c94cf0a71b51982d5b601c501b8b"
+
+TEMURIN_VERSION = "21.0.12+8"
+TEMURIN_ARCHIVE = "OpenJDK21U-jdk_x64_linux_hotspot_21.0.12_8.tar.gz"
+TEMURIN_URL = (
+    "https://github.com/adoptium/temurin21-binaries/releases/download/"
+    f"jdk-21.0.12%2B8/{TEMURIN_ARCHIVE}"
+)
+TEMURIN_SHA256 = "e4446ff06a276155697597cc0f1b15da004ff083f4964a35271ecee567177370"
+
+
+
+def obtain(url: str, expected: str, archive: Path) -> None:
+    if archive.is_file() and file_sha256(archive) == expected:
+        print(f"Using {archive}")
+        return
+    archive.unlink(missing_ok=True)
+    print(f"Downloading {url}")
+    download(url, archive, executable=False)
+    actual = file_sha256(archive)
+    if actual != expected:
+        archive.unlink(missing_ok=True)
+        raise SystemExit(
+            f"{archive}: SHA-256 mismatch\nexpected {expected}\nactual   {actual}"
+        )
+
+
+def checked_members(names: list[str], archive: Path) -> None:
+    for name in names:
+        member = Path(name)
+        if member.is_absolute() or ".." in member.parts:
+            raise SystemExit(f"{archive}: unsafe archive member {name}")
+
+
+def extract_zip(archive: Path, destination: Path) -> None:
+    with zipfile.ZipFile(archive) as source:
+        checked_members(source.namelist(), archive)
+        source.extractall(destination)
+
+
+def extract_tar(archive: Path, destination: Path) -> None:
+    with tarfile.open(archive, "r:gz") as source:
+        checked_members([member.name for member in source.getmembers()], archive)
+        if sys.version_info >= (3, 12):
+            source.extractall(destination, filter="fully_trusted")
+        else:
+            source.extractall(destination)
+
+
+def only_directory(path: Path, archive: Path) -> Path:
+    entries = list(path.iterdir())
+    if len(entries) != 1 or not entries[0].is_dir():
+        raise SystemExit(f"{archive}: expected one top-level directory")
+    return entries[0]
+
+
+def install_archive(
+    archive: Path,
+    destination: Path,
+    version: str,
+    extractor,
+    marker_name: str,
+) -> None:
+    marker = destination / marker_name
+    if marker.is_file() and marker.read_text(encoding="utf-8").strip() == version:
+        print(f"Using {destination}")
+        return
+    if destination.exists():
+        raise SystemExit(
+            f"{destination} already exists but is not the pinned {version} install; "
+            "move it aside and rerun"
+        )
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(
+        prefix=f".{destination.name}-", dir=destination.parent
+    ) as temporary_name:
+        temporary = Path(temporary_name)
+        extractor(archive, temporary)
+        extracted = only_directory(temporary, archive)
+        extracted.rename(destination)
+    marker.write_text(version + "\n", encoding="utf-8")
+    print(f"Installed {destination}")
+
+
+def install_extension(archive: Path, ghidra: Path) -> None:
+    extension_root = ghidra / "Ghidra" / "Extensions"
+    destination = extension_root / "GhidraRPXLoader"
+    marker = destination / ".sm3dcomp-version"
+    if marker.is_file() and marker.read_text(
+        encoding="utf-8"
+    ).strip() == GHIDRARPX_VERSION:
+        print(f"Using {destination}")
+        return
+    if destination.exists():
+        raise SystemExit(
+            f"{destination} already exists but is not GhidraRPXLoader "
+            f"{GHIDRARPX_VERSION}; move it aside and rerun"
+        )
+    extension_root.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(
+        prefix=".GhidraRPXLoader-", dir=extension_root
+    ) as temporary_name:
+        temporary = Path(temporary_name)
+        extract_zip(archive, temporary)
+        extracted = only_directory(temporary, archive)
+        extracted.rename(destination)
+    marker.write_text(GHIDRARPX_VERSION + "\n", encoding="utf-8")
+    print(f"Installed {destination}")
+
+
+def ensure_launch_permissions(ghidra: Path) -> None:
+    for path in (
+        ghidra / "ghidraRun",
+        ghidra / "support" / "analyzeHeadless",
+        ghidra / "support" / "launch.sh",
+    ):
+        mode = os.stat(path).st_mode
+        os.chmod(path, mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
+
+
+def validate_ghidra(java_home: Path, ghidra: Path) -> None:
+    java = java_home / "bin" / ("java.exe" if platform.system() == "Windows" else "java")
+    headless = ghidra / "support" / (
+        "analyzeHeadless.bat" if platform.system() == "Windows" else "analyzeHeadless"
+    )
+    extension = (
+        ghidra / "Ghidra" / "Extensions" / "GhidraRPXLoader" /
+        "lib" / "GhidraRPXLoader.jar"
+    )
+    for required in (java, headless, extension):
+        if not required.is_file():
+            raise SystemExit(f"setup is incomplete: missing {required}")
+    result = subprocess.run(
+        [str(java), "-version"], text=True, stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT, check=True
+    )
+    first_line = result.stdout.splitlines()[0] if result.stdout else "Java 21"
+    print(first_line)
+    print(f"Ghidra {GHIDRA_VERSION} with GhidraRPXLoader {GHIDRARPX_VERSION} is ready")
+
+
+
+GHS_ARCHIVE = "ghs5.3.22.tar.gz"
+GHS_URL = "https://github.com/decompme/compilers/releases/download/compilers/" + GHS_ARCHIVE
+GHS_SHA256 = "41cd0a4723acfbddf8f70a9c3ff84bce7e85087b1d1ccef8bbf5f03d82c2b520"
+
+
+def setup_compiler(destination: Path) -> None:
+    destination = destination.resolve()
+    executable = destination / "bin" / "cxppc.exe"
+    if executable.is_file():
+        print(f"Using {destination}")
+        return
+    if destination.exists():
+        raise SystemExit(f"incomplete compiler installation at {destination}; move it aside")
+    archive = PROJECT_ROOT / ".local" / "downloads" / GHS_ARCHIVE
+    obtain(GHS_URL, GHS_SHA256, archive)
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(dir=destination.parent, prefix=".ghs-") as name:
+        stage = Path(name) / "ghs"
+        stage.mkdir()
+        extract_tar(archive, stage)
+        if not (stage / "bin" / "cxppc.exe").is_file():
+            raise SystemExit(f"missing bin/cxppc.exe in {archive}")
+        stage.rename(destination)
+    print(f"Installed {destination}")
+
+
+def setup_ghidra(prefix: Path) -> None:
+    prefix = prefix.resolve()
+    downloads = prefix / "downloads"
+    downloads.mkdir(parents=True, exist_ok=True)
+    machine = platform.machine().lower()
+    if platform.system() != "Linux" or machine not in ("x86_64", "amd64"):
+        raise SystemExit("automatic Ghidra installation requires Linux x86_64")
+    java_archive = downloads / TEMURIN_ARCHIVE
+    ghidra_archive = downloads / GHIDRA_ARCHIVE
+    extension_archive = downloads / GHIDRARPX_ARCHIVE
+    obtain(TEMURIN_URL, TEMURIN_SHA256, java_archive)
+    obtain(GHIDRA_URL, GHIDRA_SHA256, ghidra_archive)
+    obtain(GHIDRARPX_URL, GHIDRARPX_SHA256, extension_archive)
+    java_home = prefix / "jdk-21"
+    ghidra = prefix / "ghidra"
+    install_archive(java_archive, java_home, TEMURIN_VERSION, extract_tar, ".sm3dcomp-version")
+    install_archive(ghidra_archive, ghidra, GHIDRA_VERSION, extract_zip, ".sm3dcomp-version")
+    install_extension(extension_archive, ghidra)
+    ensure_launch_permissions(ghidra)
+    validate_ghidra(java_home, ghidra)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         description="Configure and report progress for the SM3DW matching decompilation."
     )
     parser.add_argument("mode",
-                        choices=("configure", "progress", "verify", "extract", "make-base"),
+                        choices=("configure", "validate", "progress", "verify", "extract", "make-base", "imports", "compiler", "ghidra", "download-tool"),
                         nargs="?", default="configure")
     parser.add_argument("-v", "--version", choices=VERSIONS, type=str.upper,
                         default=DEFAULT_VERSION, help="game version to build (default: US)")
@@ -1092,8 +1590,34 @@ def main() -> None:
     parser.add_argument("--address", type=lambda value: int(value, 0))
     parser.add_argument("--size", type=lambda value: int(value, 0))
     parser.add_argument("--section", action="append")
+    parser.add_argument("--check", action="store_true")
+    parser.add_argument("--elf", type=Path)
+    parser.add_argument("--prefix", type=Path, default=PROJECT_ROOT / ".local")
+    parser.add_argument("--destination", type=Path)
+    parser.add_argument("--tool", choices=("wibo",))
+    parser.add_argument("--tag", default=WIBO_TAG)
     args = parser.parse_args()
-    if args.mode == "configure":
+    if args.mode == "validate":
+        try:
+            validate_manifests()
+        except ValueError as error:
+            parser.exit(1, f"invalid manifests: {error}\n")
+    elif args.mode == "imports":
+        try:
+            generate_import_maps(args.elf or PROJECT_ROOT / "build" / args.version / "orig" / "RedCarpet.elf",
+                                 args.output or PROJECT_ROOT / "config" / args.version / "imports",
+                                 args.check)
+        except (ValueError, OSError) as error:
+            parser.exit(1, f"import extraction: {error}\n")
+    elif args.mode == "compiler":
+        setup_compiler(args.destination or PROJECT_ROOT / ".local" / "toolchains" / "ghs5.3.22")
+    elif args.mode == "ghidra":
+        setup_ghidra(args.prefix)
+    elif args.mode == "download-tool":
+        if args.tool != "wibo" or args.output is None:
+            parser.error("download-tool requires --tool wibo and --output")
+        download(wibo_url(args.tag), args.output)
+    elif args.mode == "configure":
         configure(args)
     elif args.mode == "progress":
         progress(args)

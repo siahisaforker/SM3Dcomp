@@ -26,6 +26,9 @@ CMakeFiles/
 *.gpr
 *.rep/
 
+# Per-game RPL import maps extracted from the local RPX
+/config/US/imports/*.txt
+
 # Python tooling
 __pycache__/
 *.py[cod]

@@ -11,7 +11,7 @@ export XDG_DATA_HOME="$repo_root/.local/xdg/share"
 export PATH="$JAVA_HOME/bin:$PATH"
 
 if [[ ! -x "$JAVA_HOME/bin/java" || ! -x "$GHIDRA_HOME/ghidraRun" ]]; then
-    printf 'Ghidra is not installed; run tools/setup_ghidra.py first.\n' >&2
+    printf 'Ghidra is not installed; run python3 configure.py ghidra first.\n' >&2
     return 1 2>/dev/null || exit 1
 fi
 
