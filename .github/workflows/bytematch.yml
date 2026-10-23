@@ -21,8 +21,7 @@ jobs:
       - run: python3 -m pip install -r requirements.txt
       - name: Validate manifests and progress
         run: |
-          python3 tools/validate_splits.py
-          python3 -m unittest discover -s tests -q
+          python3 configure.py validate
           python3 tools/bytematch_report.py generate
           python3 tools/bytematch_report.py check
       - name: Publish ByteMatch report
