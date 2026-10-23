@@ -20,6 +20,7 @@
     "CMakeLists.txt": "732561aa8aabf108a91e1fcb2d79f882bd6882648be704bd4c8bb29566649495",
     "config/US/build.sha256": "a00e9542ffe18983b2bd2291c51291b9953dd5c219045457113fce0c5d5ae363",
     "config/US/config.yml": "2d581b5cef1c08d530b7fc1178c58bde94969500a0389c8f8c216654802ca5c6",
+    "config/US/fuzzy_functions.json": "6a16b22eed1b0d0b97b02510f8e154e20f17adf1bcbd2f1babd0bc3f45430775",
     "config/US/imports/gx2.txt": "4329cbdb93cba1b56bf621e0884f30dacc96af2a9c1d8459b7419da708fd5aa7",
     "config/US/splits.txt": "da94ca64e550495d127a30913b675a309a9e84d7e5401d3ecac924fc277dd30f",
     "config/US/symbols.txt": "da3a0fa6cca10a9141997a0483f36a30b93da053e3f31684429fdb3c307ef36c",
@@ -214,6 +215,19 @@
       "address": 36384896,
       "size": 24,
       "unit": "Game/Player/PlayerMovementCounter"
+    }
+  ],
+  "fuzzy_functions": [
+    {
+      "name": "sm3d::PlayerMovementCounter::update",
+      "unit": "Game/Player/PlayerMovementCounterUpdate",
+      "source_path": "src/Game/Player/PlayerMovementCounterUpdate.cpp",
+      "address": 36384920,
+      "size": 432,
+      "fuzzy_match_percent": 77.83251232,
+      "compiled_size": 380,
+      "opcode_matches": 79,
+      "method": "ppc_opcode_sequence_v1"
     }
   ]
 }

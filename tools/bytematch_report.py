@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 
 import argparse
+from difflib import SequenceMatcher
 import hashlib
 import json
+import shutil
 import struct
 import subprocess
 import sys
@@ -12,6 +14,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 from configure import (
+    extract_elf_range,
     file_sha256,
     is_verification_fresh,
     load_project,
@@ -23,6 +26,8 @@ from configure import (
 VERSION = "US"
 SNAPSHOT = ROOT / "config" / VERSION / "bytematch_snapshot.json"
 OUTPUT = ROOT / "build" / VERSION / "bytematch" / "report.json"
+FUZZY_MANIFEST = ROOT / "config" / VERSION / "fuzzy_functions.json"
+TEXT_BASE = 0x02000020
 INVENTORY_FUNCTIONS = 30964
 
 
@@ -90,6 +95,91 @@ def unit_match_records(project, units):
     return sorted(records, key=lambda item: (item["address"], item["name"]))
 
 
+def fuzzy_manifest():
+    if not FUZZY_MANIFEST.is_file():
+        return []
+    candidates = json.loads(FUZZY_MANIFEST.read_text(encoding="utf-8"))
+    if not isinstance(candidates, list):
+        fail("fuzzy manifest must be a list")
+    seen = set()
+    for item in candidates:
+        if not isinstance(item, dict) or set(item) != {"name", "unit", "source_path", "address", "size"}:
+            fail("invalid fuzzy function manifest entry")
+        try:
+            address = int(item["address"], 0)
+        except (ValueError, TypeError):
+            fail("invalid fuzzy function address")
+        if (not item["name"] or not item["unit"] or
+                type(item["size"]) is not int or item["size"] <= 0 or
+                address % 4 or item["size"] % 4 or
+                not item["source_path"].startswith("src/") or
+                not (ROOT / item["source_path"]).is_file()):
+            fail("invalid fuzzy function declaration")
+        key = (item["unit"], item["name"], address)
+        if key in seen:
+            fail("duplicate fuzzy function")
+        seen.add(key)
+    return candidates
+
+
+def opcode_tokens(code):
+    if len(code) % 4:
+        fail("PowerPC instruction sequence is not word aligned")
+    for (word,) in struct.iter_unpack(">I", code):
+        opcode = word >> 26
+        # Extended-opcode instructions need the XO field to distinguish operations.
+        yield (opcode, (word >> 1) & 1023) if opcode in (4, 19, 31, 59, 63) else (opcode,)
+
+
+def measure_fuzzy(project):
+    """Compare the ordinary GHS C++ object to original PPC, never INLINE_HACKS."""
+    results = []
+    output = ROOT / "build" / VERSION / "fuzzy"
+    output.mkdir(parents=True, exist_ok=True)
+    wibo = ROOT / "build" / "tools" / "wibo"
+    compiler = ROOT / project.compiler
+    if not wibo.is_file() or not compiler.is_file():
+        fail("GHS compiler and wibo required for local fuzzy snapshot update")
+    objcopy = shutil.which(project.objcopy)
+    if objcopy is None:
+        fallback = Path("/opt/devkitpro/devkitPPC/bin") / project.objcopy
+        if not fallback.is_file():
+            fail("PowerPC objcopy is unavailable for fuzzy snapshot update")
+        objcopy = str(fallback)
+    original_elf = ROOT / "build" / VERSION / "orig" / "RedCarpet.elf"
+    for candidate in fuzzy_manifest():
+        address = int(candidate["address"], 0)
+        source = ROOT / candidate["source_path"]
+        obj = output / (source.stem + ".o")
+        binary = output / (source.stem + ".bin")
+        args = ([str(wibo), str(compiler), "-c", *project.compiler_flags] +
+                ["-I" + str((ROOT / include).resolve()) for include in project.include_dirs] +
+                ["-o", str(obj), str(source)])
+        subprocess.run(args, cwd=ROOT, check=True)
+        subprocess.run([objcopy, "-O", "binary", "-j", ".text", str(obj), str(binary)],
+                       cwd=ROOT, check=True)
+        original = extract_elf_range(original_elf, address, candidate["size"])
+        compiled = binary.read_bytes()
+        if not compiled or len(compiled) % 4:
+            fail("invalid compiled fuzzy PPC object")
+        reference_tokens = list(opcode_tokens(original))
+        compiled_tokens = list(opcode_tokens(compiled))
+        matcher = SequenceMatcher(None, reference_tokens, compiled_tokens, autojunk=False)
+        percent = round(matcher.ratio() * 100, 8)
+        if not 0 < percent < 100:
+            fail("fuzzy candidate has no measurable similarity or requires exact verification")
+        results.append({"name": candidate["name"], "unit": candidate["unit"],
+                        "source_path": candidate["source_path"],
+                        "address": address, "size": candidate["size"],
+                        "fuzzy_match_percent": percent,
+                        "compiled_size": len(compiled),
+                        "opcode_matches": sum(length for _, _, length in matcher.get_matching_blocks()),
+                        "method": "ppc_opcode_sequence_v1"})
+        print(f"Fuzzy: {candidate['name']} {percent:.2f}% opcode similarity "
+              f"({len(compiled)} vs {len(original)} bytes; source C++ only)")
+    return results
+
+
 def create_snapshot():
     subprocess.run([sys.executable, "tools/validate_splits.py"], cwd=ROOT, check=True)
     subprocess.run(["ninja", "-j2", "progress"], cwd=ROOT, check=True)
@@ -117,6 +207,7 @@ def create_snapshot():
         "estimated_total_functions": INVENTORY_FUNCTIONS,
         "inputs": input_hashes(),
         "matched_functions": records,
+        "fuzzy_functions": measure_fuzzy(project),
     }
     SNAPSHOT.write_text(json.dumps(snapshot, indent=2) + "\n", encoding="utf-8")
     print(f"Snapshot: {code_bytes:,} / {project.text_size:,} strictly matched code bytes; "
@@ -128,13 +219,13 @@ def ratio(part, whole):
 
 
 def measures(total_code, matched_code=0, total_functions=0, matched_functions=0,
-             total_units=0, complete_units=0, total_data=0, matched_data=0):
+             total_units=0, complete_units=0, total_data=0, matched_data=0, fuzzy_code=0):
     percent = ratio(matched_code, total_code)
     return {
         "total_code": str(total_code),
         "matched_code": str(matched_code),
         "matched_code_percent": percent,
-        "fuzzy_match_percent": percent,
+        "fuzzy_match_percent": ratio(matched_code + fuzzy_code, total_code),
         "complete_code": str(matched_code),
         "complete_code_percent": percent,
         "total_data": str(total_data),
@@ -184,6 +275,42 @@ def build_report():
             fail("duplicated verified function")
         verified_by_key[key] = item
 
+    fuzzy_records = snapshot.get("fuzzy_functions", [])
+    if not isinstance(fuzzy_records, list):
+        fail("invalid fuzzy function records")
+    manifest = fuzzy_manifest()
+    if len(fuzzy_records) != len(manifest):
+        fail("fuzzy records differ from configured candidates")
+    fuzzy_seen = set()
+    for item, candidate in zip(fuzzy_records, manifest):
+        address = int(candidate["address"], 0)
+        if any(item.get(key) != value for key, value in
+               (("name", candidate["name"]), ("unit", candidate["unit"]),
+                ("source_path", candidate["source_path"]),
+                ("address", address), ("size", candidate["size"]),
+                ("method", "ppc_opcode_sequence_v1"))):
+            fail("fuzzy record identity differs from manifest")
+        score = item.get("fuzzy_match_percent")
+        compiled_size = item.get("compiled_size")
+        matches = item.get("opcode_matches")
+        if (type(score) not in (int, float) or not 0 < score < 100 or
+                type(compiled_size) is not int or compiled_size <= 0 or
+                compiled_size % 4 or type(matches) is not int or
+                not 0 < matches <= min(compiled_size, item["size"]) // 4):
+            fail("invalid measured fuzzy similarity")
+        if (address < TEXT_BASE or address + item["size"] >
+                TEXT_BASE + project.text_size):
+            fail("fuzzy candidate is outside executable .text")
+        extent = (address, address + item["size"])
+        if any(extent[0] < end and start < extent[1] for start, end in fuzzy_seen):
+            fail("overlapping fuzzy candidates")
+        fuzzy_seen.add(extent)
+    for unit in units:
+        for section in unit.sections:
+            if section.name == ".text" and any(start < section.end and section.start < end
+                                               for start, end in fuzzy_seen):
+                fail("fuzzy candidate overlaps an exact-matching unit")
+
     report_units = []
     code_assigned = 0
     matched_code = 0
@@ -229,8 +356,25 @@ def build_report():
     if len([fn for u in units for fn in u.functions]) > estimate:
         fail("tracked functions exceed estimated inventory")
 
+    fuzzy_equivalent_bytes = 0.0
+    for item in fuzzy_records:
+        fuzzy_score = item["fuzzy_match_percent"]
+        fuzzy_bytes = item["size"] * fuzzy_score / 100
+        fuzzy_equivalent_bytes += fuzzy_bytes
+        code_assigned += item["size"]
+        report_units.append({
+            "name": item["unit"],
+            "measures": measures(item["size"], total_functions=1, total_units=1,
+                                 fuzzy_code=fuzzy_bytes),
+            "functions": [{"name": item["name"], "size": str(item["size"]),
+                           "address": str(item["address"] - TEXT_BASE),
+                           "fuzzy_match_percent": fuzzy_score,
+                           "metadata": {"virtual_address": str(item["address"])}}],
+            "metadata": {"complete": False, "source_path": item["source_path"],
+                         "progress_categories": [project.progress_category]},
+        })
     unmapped = project.text_size - code_assigned
-    pending_functions = estimate - sum(len(unit.functions) for unit in units)
+    pending_functions = estimate - sum(len(unit.functions) for unit in units) - len(fuzzy_records)
     if unmapped:
         report_units.append({
             "name": "Unmapped .text (not an original object split)",
@@ -246,7 +390,8 @@ def build_report():
     })
     complete_units = sum(int(unit["metadata"]["complete"]) for unit in report_units)
     report_measures = measures(project.text_size, matched_code, estimate, matched_functions,
-                               len(report_units), complete_units, total_data=data_size)
+                               len(report_units), complete_units, total_data=data_size,
+                               fuzzy_code=fuzzy_equivalent_bytes)
     report = {
         "version": 2,
         "measures": report_measures,

@@ -44,9 +44,10 @@ class ByteMatchReportTests(unittest.TestCase):
 
     def test_bad_data_snapshot_is_rejected(self):
         actual = json.loads(bytematch.SNAPSHOT.read_text(encoding="utf-8"))
-        with patch.object(bytematch.json, "loads", return_value={**actual, "data_sections": []}):
-            with self.assertRaisesRegex(ValueError, "data sections"):
-                bytematch.build_report()
+        with patch.object(bytematch, "fuzzy_manifest", return_value=bytematch.fuzzy_manifest()):
+            with patch.object(bytematch.json, "loads", return_value={**actual, "data_sections": []}):
+                with self.assertRaisesRegex(ValueError, "data sections"):
+                    bytematch.build_report()
 
     def test_verified_source_paths(self):
         report = bytematch.build_report()
@@ -62,6 +63,34 @@ class ByteMatchReportTests(unittest.TestCase):
         self.assertTrue(any(unit["name"].startswith("Unmapped .text")
                             for unit in report["units"]))
 
+    def test_fuzzy_update_is_not_exact(self):
+        report = bytematch.build_report()
+        snapshot = json.loads(bytematch.SNAPSHOT.read_text(encoding="utf-8"))
+        fuzzy = snapshot["fuzzy_functions"]
+        self.assertEqual(len(fuzzy), 1)
+        self.assertEqual(fuzzy[0]["name"], "sm3d::PlayerMovementCounter::update")
+        self.assertEqual(fuzzy[0]["method"], "ppc_opcode_sequence_v1")
+        self.assertLess(fuzzy[0]["fuzzy_match_percent"], 100)
+        candidate = next(unit for unit in report["units"] if unit["name"] == fuzzy[0]["unit"])
+        self.assertEqual(candidate["measures"]["total_code"], "432")
+        self.assertEqual(candidate["measures"]["matched_code"], "0")
+        self.assertEqual(candidate["measures"]["matched_functions"], 0)
+        self.assertEqual(candidate["functions"][0]["fuzzy_match_percent"],
+                         fuzzy[0]["fuzzy_match_percent"])
+        self.assertGreater(report["measures"]["fuzzy_match_percent"],
+                           report["measures"]["matched_code_percent"])
+        self.assertEqual(report["measures"]["matched_functions"], 29)
+        self.assertEqual(report["measures"]["matched_code"], "308")
+
+    def test_corrupted_fuzzy_measure_is_rejected(self):
+        actual = json.loads(bytematch.SNAPSHOT.read_text(encoding="utf-8"))
+        corrupted = copy.deepcopy(actual)
+        corrupted["fuzzy_functions"][0]["fuzzy_match_percent"] = 100
+        with patch.object(bytematch, "fuzzy_manifest", return_value=bytematch.fuzzy_manifest()):
+            with patch.object(bytematch.json, "loads", return_value=corrupted):
+                with self.assertRaisesRegex(ValueError, "fuzzy similarity"):
+                    bytematch.build_report()
+
     def test_stale_source_is_rejected(self):
         hashes = bytematch.input_hashes()
         hashes["src/Game/Player/PlayerInput.cpp"] = "0" * 64
@@ -73,7 +102,7 @@ class ByteMatchReportTests(unittest.TestCase):
         actual = json.loads(bytematch.SNAPSHOT.read_text(encoding="utf-8"))
         corrupted = copy.deepcopy(actual)
         corrupted["matched_functions"][0]["size"] += 4
-        with patch.object(bytematch, "SNAPSHOT", bytematch.SNAPSHOT):
+        with patch.object(bytematch, "fuzzy_manifest", return_value=bytematch.fuzzy_manifest()):
             with patch.object(bytematch.json, "loads", return_value=corrupted):
                 with self.assertRaisesRegex(ValueError, "snapshot records"):
                     bytematch.build_report()

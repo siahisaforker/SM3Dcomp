@@ -34,6 +34,22 @@ The original `RedCarpet.rpx` SHA-256 is:
 
 Do not assume Wii U functions exist simply because Bowser's Fury/Switch has one. In particular, Fury's aerial dive may need new game logic rather than mapping an existing Wii U action. Keep `SM3DW-modding` and the installed Fury physics plugin independent of this decomp.
 
+## Fuzzy candidates
+
+A fuzzy candidate is normal C++ source whose GHS output is not byte-exact. Declare it in
+`config/US/fuzzy_functions.json`, **not** in the strict `splits.txt` or `symbols.txt`.
+Running `python3 tools/bytematch_report.py update` locally compiles the ordinary C++ branch
+(without `INLINE_HACKS`) and compares PowerPC opcode sequences to the original RPX using an
+order-preserving sequence alignment that ignores register selection and operands. The
+`ppc_opcode_sequence_v1` score is an approximation, not objdiff's instruction/operand-aware
+similarity algorithm or evidence of functional correctness. The input hashes, measured score,
+compiler-emitted size, and number of aligned opcode words are stored in the verified snapshot;
+CI renders only this snapshot without requiring Nintendo's compiler or the RPX.
+
+The report exposes fuzzy percentage separately at function, unit, and project levels.
+Fuzzy units occupy their original text range but contribute **zero** exact-matched bytes,
+functions, or completed units. Remove fuzzy entries when strict verification becomes possible.
+
 ## Reproducibility
 
 ```sh
