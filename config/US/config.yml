@@ -1,0 +1,31 @@
+object: orig/US/RedCarpet.rpx
+sha256: 813d906365860eb6ef4644e8380983db382cbaefd951f9a89bd3d2c84eb4aaad
+entry: 0x026afba0
+text_address: 0x02000020
+text_size: 0x006feef4
+symbols: config/US/symbols.txt
+splits: config/US/splits.txt
+undefined_funcs: config/US/undefined_funcs.txt
+undefined_syms: config/US/undefined_syms.txt
+import_maps:
+  - config/US/imports/gx2.txt
+source_dir: src
+compiler: .local/toolchains/ghs5.3.22/bin/cxppc.exe
+compiler_flags:
+  - -cpu=espresso
+  - -bigendian
+  - -Ospeed
+  - -sda=0
+  - -zda=0
+  - --no_rtti
+  - --no_exceptions
+include_dirs:
+  - include
+linker: powerpc-eabi-ld
+linker_flags: []
+objcopy: powerpc-eabi-objcopy
+objcopy_extract_flags:
+  - -O
+  - binary
+progress_category: game
+progress_category_name: Game Code

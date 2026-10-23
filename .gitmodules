@@ -1,0 +1,4 @@
+# Tool source dependencies are pinned as submodules.
+[submodule "tools/wiiurpxtool"]
+	path = tools/wiiurpxtool
+	url = https://github.com/0CBH0/wiiurpxtool.git

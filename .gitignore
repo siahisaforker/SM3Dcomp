@@ -1,0 +1,46 @@
+# Local toolchains, analysis projects, and generated builds
+/build/
+/.local/
+/game/
+/build.ninja
+/.ninja_deps
+/.ninja_log
+/objdiff.json
+/compile_commands.json
+CMakeCache.txt
+CMakeFiles/
+
+# User-provided game data and binary dumps
+/orig/**
+!/orig/**/
+!/orig/**/.gitkeep
+*.rpx
+*.rpl
+*.wud
+*.wux
+*.wua
+*.iso
+*.wbfs
+*.wad
+*.gcm
+*.gpr
+*.rep/
+
+# Python tooling
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+
+# Editors and OS metadata
+.idea/
+.vscode/
+*.swp
+*.swo
+*.kate-swp
+*~
+.DS_Store
+Thumbs.db
