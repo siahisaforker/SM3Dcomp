@@ -3,6 +3,18 @@
   "game_version": "US",
   "rpx_sha256": "813d906365860eb6ef4644e8380983db382cbaefd951f9a89bd3d2c84eb4aaad",
   "total_code": 7335668,
+  "data_sections": [
+    {
+      "name": ".rodata",
+      "address": 268435456,
+      "size": 3906444
+    },
+    {
+      "name": ".data",
+      "address": 272341920,
+      "size": 130024
+    }
+  ],
   "estimated_total_functions": 30964,
   "inputs": {
     "CMakeLists.txt": "732561aa8aabf108a91e1fcb2d79f882bd6882648be704bd4c8bb29566649495",

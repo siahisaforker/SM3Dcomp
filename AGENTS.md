@@ -46,4 +46,4 @@ Update research/provenance as you work, but do not inflate verified or matched c
 
 ## Publishing progress
 
-Do not infer matching from source existence or Ghidra output. After strict native build verification, run `python3 tools/bytematch_report.py update`. CI uses the committed snapshot and fails on stale matching inputs. See `docs/BYTEMATCH.md`. Do not upload the RPX, compiler, local build artifacts, or cached matching binaries.
+Do not infer matching from source existence or Ghidra output. After strict native build verification, run `python3 tools/bytematch_report.py update`. CI uses the committed snapshot and fails on stale matching inputs. Do not upload the RPX, compiler, local build artifacts, or cached matching binaries.

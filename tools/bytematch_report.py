@@ -3,6 +3,7 @@
 import argparse
 import hashlib
 import json
+import struct
 import subprocess
 import sys
 from pathlib import Path
@@ -36,6 +37,35 @@ def input_hashes():
                      and path != SNAPSHOT and "__pycache__" not in path.parts)
     return {str(path.relative_to(ROOT)): file_sha256(path)
             for path in sorted(files)}
+
+
+def original_data_sections(path):
+    data = path.read_bytes()
+    if data[:7] != b"\x7fELF\x01\x02\x01":
+        fail("expected decompressed big-endian Wii U ELF")
+    header = struct.unpack_from(">I", data, 32)[0]
+    size, count, names_index = struct.unpack_from(">HHH", data, 46)
+    if size != 40 or not 0 <= names_index < count or header + count * size > len(data):
+        fail("invalid original ELF section headers")
+    headers = [struct.unpack_from(">IIIIII", data, header + i * size)
+               for i in range(count)]
+    _, _, _, _, offset, length = headers[names_index]
+    if offset + length > len(data):
+        fail("invalid original section-name table")
+    names = data[offset:offset + length]
+    found = {}
+    for name_offset, section_type, flags, address, offset, length in headers:
+        if name_offset >= len(names):
+            continue
+        name = names[name_offset:].split(b"\0", 1)[0].decode("utf-8")
+        if name not in (".rodata", ".data"):
+            continue
+        if name in found or section_type != 1 or flags & 0x08000000 or offset + length > len(data):
+            fail("invalid or compressed initialized data section: " + name)
+        found[name] = {"name": name, "address": address, "size": length}
+    if set(found) != {".rodata", ".data"}:
+        fail("missing original initialized data sections")
+    return [found[".rodata"], found[".data"]]
 
 
 def project_units():
@@ -83,6 +113,7 @@ def create_snapshot():
         "game_version": VERSION,
         "rpx_sha256": project.sha256,
         "total_code": project.text_size,
+        "data_sections": original_data_sections(ROOT / "build" / VERSION / "orig" / "RedCarpet.elf"),
         "estimated_total_functions": INVENTORY_FUNCTIONS,
         "inputs": input_hashes(),
         "matched_functions": records,
@@ -97,7 +128,7 @@ def ratio(part, whole):
 
 
 def measures(total_code, matched_code=0, total_functions=0, matched_functions=0,
-             total_units=0, complete_units=0):
+             total_units=0, complete_units=0, total_data=0, matched_data=0):
     percent = ratio(matched_code, total_code)
     return {
         "total_code": str(total_code),
@@ -106,6 +137,11 @@ def measures(total_code, matched_code=0, total_functions=0, matched_functions=0,
         "fuzzy_match_percent": percent,
         "complete_code": str(matched_code),
         "complete_code_percent": percent,
+        "total_data": str(total_data),
+        "matched_data": str(matched_data),
+        "matched_data_percent": ratio(matched_data, total_data),
+        "complete_data": str(matched_data),
+        "complete_data_percent": ratio(matched_data, total_data),
         "total_functions": total_functions,
         "matched_functions": matched_functions,
         "matched_functions_percent": ratio(matched_functions, total_functions),
@@ -127,6 +163,14 @@ def build_report():
         fail("verified progress snapshot is stale; rebuild and run bytematch_report.py update")
     if snapshot.get("total_code") != project.text_size:
         fail("snapshot code size differs from project configuration")
+    sections = snapshot.get("data_sections")
+    if not isinstance(sections, list) or [section.get("name") for section in sections] != [".rodata", ".data"]:
+        fail("snapshot initialized data sections missing or invalid")
+    for section in sections:
+        if (type(section.get("size")) is not int or section["size"] <= 0 or
+                type(section.get("address")) is not int or section["address"] < 0):
+            fail("snapshot initialized data boundaries invalid")
+    data_size = sum(section["size"] for section in sections)
     estimate = snapshot.get("estimated_total_functions")
     if type(estimate) is not int or estimate < 0:
         fail("invalid estimated function inventory")
@@ -194,9 +238,15 @@ def build_report():
             "metadata": {"complete": False,
                          "progress_categories": [project.progress_category]},
         })
+    report_units.append({
+        "name": "Unmapped initialized data (.rodata + .data)",
+        "measures": measures(0, total_data=data_size, total_units=1),
+        "metadata": {"complete": False,
+                     "progress_categories": [project.progress_category]},
+    })
     complete_units = sum(int(unit["metadata"]["complete"]) for unit in report_units)
     report_measures = measures(project.text_size, matched_code, estimate, matched_functions,
-                               len(report_units), complete_units)
+                               len(report_units), complete_units, total_data=data_size)
     report = {
         "version": 2,
         "measures": report_measures,

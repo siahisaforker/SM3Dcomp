@@ -1,14 +1,19 @@
 # SM3Dcomp
 
-[![Code progress](https://bytematch.dev/siahisaforker/SM3Dcomp.svg?label=Code&measure=matched_code_percent&version=US)](https://bytematch.dev/siahisaforker/SM3Dcomp)
+[![Code](https://bytematch.dev/siahisaforker/SM3Dcomp.svg?version=US&style=flat-square&label=Code&measure=matched_code_percent)](https://bytematch.dev/siahisaforker/SM3Dcomp) [![Data](https://bytematch.dev/siahisaforker/SM3Dcomp.svg?version=US&style=flat-square&label=Data&measure=matched_data_percent)](https://bytematch.dev/siahisaforker/SM3Dcomp) [![Functions](https://bytematch.dev/siahisaforker/SM3Dcomp.svg?version=US&style=flat-square&label=Functions&measure=matched_functions)](https://bytematch.dev/siahisaforker/SM3Dcomp) [![Units](https://bytematch.dev/siahisaforker/SM3Dcomp.svg?version=US&style=flat-square&label=Units&measure=complete_units)](https://bytematch.dev/siahisaforker/SM3Dcomp)
+
+[![ByteMatch CI](https://github.com/siahisaforker/SM3Dcomp/actions/workflows/bytematch.yml/badge.svg)](https://github.com/siahisaforker/SM3Dcomp/actions/workflows/bytematch.yml) [![Validation](https://github.com/siahisaforker/SM3Dcomp/actions/workflows/validate.yml/badge.svg)](https://github.com/siahisaforker/SM3Dcomp/actions/workflows/validate.yml)
 
 A matching decompilation of **Super Mario 3D World (Wii U)**
 
 ## Status
-308 / 7,335,668 bytes matched (0.0042%)
+| Metric | Matched |
+| --- | --- |
+| Code | 308 / 7,335,668 bytes (0.0042%) |
+| Data | 0 / 4,036,468 initialized bytes (0%; not started) |
+| Functions | 29 / ~30,964 (Ghidra estimate) |
 
-
-Progress reports are published via [ByteMatch](https://bytematch.dev/siahisaforker/SM3Dcomp) after project registration. See [ByteMatch integration](docs/BYTEMATCH.md).
+Progress reports are published via [ByteMatch](https://bytematch.dev/siahisaforker/SM3Dcomp).
 
 ## Quick start
 

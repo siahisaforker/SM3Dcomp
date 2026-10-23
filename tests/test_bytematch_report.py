@@ -27,6 +27,27 @@ class ByteMatchReportTests(unittest.TestCase):
         self.assertEqual(measures["matched_functions"], len(snapshot["matched_functions"]))
         self.assertEqual(measures["total_functions"], snapshot["estimated_total_functions"])
 
+    def test_initialized_data_report(self):
+        report = bytematch.build_report()
+        measures = report["measures"]
+        self.assertEqual(measures["total_data"], "4036468")
+        self.assertEqual(measures["matched_data"], "0")
+        self.assertEqual(measures["matched_data_percent"], 0.0)
+        self.assertEqual(measures["complete_data"], "0")
+        self.assertEqual(sum(int(unit["measures"]["total_data"])
+                             for unit in report["units"]), int(measures["total_data"]))
+        snapshot = json.loads(bytematch.SNAPSHOT.read_text(encoding="utf-8"))
+        self.assertEqual([section["name"] for section in snapshot["data_sections"]],
+                         [".rodata", ".data"])
+        self.assertEqual(sum(section["size"] for section in snapshot["data_sections"]),
+                         int(measures["total_data"]))
+
+    def test_bad_data_snapshot_is_rejected(self):
+        actual = json.loads(bytematch.SNAPSHOT.read_text(encoding="utf-8"))
+        with patch.object(bytematch.json, "loads", return_value={**actual, "data_sections": []}):
+            with self.assertRaisesRegex(ValueError, "data sections"):
+                bytematch.build_report()
+
     def test_verified_source_paths(self):
         report = bytematch.build_report()
         matched = [unit for unit in report["units"] if unit["measures"]["matched_code"] != "0"]
