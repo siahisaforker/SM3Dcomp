@@ -1,6 +1,7 @@
 #include "Game/Player/PlayerInput.h"
 
-namespace sm3d {
+namespace sm3d
+{
 
 void PlayerInput::resetPrecedingJump()
 {
@@ -9,4 +10,4 @@ void PlayerInput::resetPrecedingJump()
     swimPaddleTriggerFrames = 5;
 }
 
-}
+} // namespace sm3d

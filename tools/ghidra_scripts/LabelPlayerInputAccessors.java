@@ -29,39 +29,48 @@ public class LabelPlayerInputAccessors extends GhidraScript {
         {"022b3004", "PlayerInput_isClimbAttackTrigOn", "8", "lbz", "blr"},
         {"022b300c", "PlayerInput_isClimbAttackButtonOn", "8", "lbz", "blr"},
         {"022b3014", "PlayerInput_isHoldButtonOn", "8", "lbz", "blr"},
-        {"022b301c", "PlayerInput_isReleaseTrigOn", "8", "lbz", "blr"}
-    };
+        {"022b301c", "PlayerInput_isReleaseTrigOn", "8", "lbz", "blr"}};
 
-    public void run() throws Exception {
-        for (String[] item : FUNCTIONS) {
+    public void run() throws Exception
+    {
+        for (String[] item : FUNCTIONS)
+        {
             Address entry = toAddr(item[0]);
             String name = item[1];
             int size = Integer.parseInt(item[2]);
             Address end = entry.add(size - 1);
-            if (getInstructionAt(entry) == null) disassemble(entry);
-            if (getInstructionAt(end.subtract(3)) == null) disassemble(end.subtract(3));
+            if (getInstructionAt(entry) == null)
+                disassemble(entry);
+            if (getInstructionAt(end.subtract(3)) == null)
+                disassemble(end.subtract(3));
             Instruction first = getInstructionAt(entry);
             Instruction last = getInstructionAt(end.subtract(3));
-            if (first == null || last == null ||
-                !first.getMnemonicString().equals(item[3]) ||
-                !last.getMnemonicString().equals(item[4])) {
+            if (first == null || last == null || !first.getMnemonicString().equals(item[3]) ||
+                !last.getMnemonicString().equals(item[4]))
+            {
                 throw new IllegalStateException(name + " has unexpected instructions");
             }
             Function function = getFunctionAt(entry);
             Function overlapping = getFunctionContaining(entry);
-            if (function == null && overlapping != null) {
+            if (function == null && overlapping != null)
+            {
                 throw new IllegalStateException(name + " overlaps " + overlapping.getName());
             }
-            if (function == null) {
+            if (function == null)
+            {
                 function = currentProgram.getFunctionManager().createFunction(
                     name, entry, new AddressSet(entry, end), SourceType.USER_DEFINED);
             }
-            if (function == null || function.getBody().getNumAddresses() != size) {
+            if (function == null || function.getBody().getNumAddresses() != size)
+            {
                 throw new IllegalStateException(name + " has unexpected body boundaries");
             }
-            if (!function.getName().equals(name)) {
-                if (!function.getName().startsWith("FUN_")) {
-                    throw new IllegalStateException(name + " already labeled " + function.getName());
+            if (!function.getName().equals(name))
+            {
+                if (!function.getName().startsWith("FUN_"))
+                {
+                    throw new IllegalStateException(name + " already labeled " +
+                                                    function.getName());
                 }
                 function.setName(name, SourceType.USER_DEFINED);
             }

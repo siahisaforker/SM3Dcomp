@@ -1,6 +1,7 @@
 #include "Game/Player/PlayerInput.h"
 
-namespace sm3d {
+namespace sm3d
+{
 
 bool PlayerInput::isJumpTrigOn() const
 {
@@ -17,4 +18,4 @@ bool PlayerInput::isRollingTrigOn() const
     return rollingTriggerFrames < 5;
 }
 
-}
+} // namespace sm3d

@@ -1,7 +1,7 @@
 PYTHON ?= python3
 NINJA ?= ninja
 
-.PHONY: all check configure all_source verify progress tools ghidra clean
+.PHONY: all check configure all_source verify progress tools ghidra clean format format-check
 
 all: check build.ninja
 	$(NINJA)
@@ -27,3 +27,13 @@ ghidra:
 
 clean:
 	$(NINJA) -t clean
+
+CLANG_FORMAT ?= clang-format
+CPP_FILES := tools/wiiurpxtool-compat/io.h $(shell find include src -type f \( -name '*.cpp' -o -name '*.h' \) | LC_ALL=C sort)
+JAVA_FILES := $(shell find tools/ghidra_scripts -type f -name '*.java' | LC_ALL=C sort)
+
+format:
+	$(CLANG_FORMAT) -i $(CPP_FILES) $(JAVA_FILES)
+
+format-check:
+	$(CLANG_FORMAT) --dry-run --Werror $(CPP_FILES) $(JAVA_FILES)

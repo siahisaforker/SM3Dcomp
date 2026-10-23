@@ -1,2 +1,3 @@
-// unix compatibility header
+#pragma once
+
 #include <stdio.h>

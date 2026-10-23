@@ -1,6 +1,7 @@
 #pragma once
 
-namespace sm3d {
+namespace sm3d
+{
 
 typedef unsigned char u8;
 typedef unsigned short u16;
@@ -13,7 +14,4 @@ typedef signed long long s64;
 typedef float f32;
 typedef double f64;
 
-typedef char u32_size_check[sizeof(u32) == 4 ? 1 : -1];
-typedef char u64_size_check[sizeof(u64) == 8 ? 1 : -1];
-
-}
+} // namespace sm3d

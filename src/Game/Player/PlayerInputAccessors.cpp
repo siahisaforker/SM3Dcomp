@@ -1,6 +1,7 @@
 #include "Game/Player/PlayerInput.h"
 
-namespace sm3d {
+namespace sm3d
+{
 
 void PlayerInput::disableJumpButton()
 {
@@ -117,4 +118,4 @@ u8 PlayerInput::isReleaseTrigOn() const
     return releaseTrigger;
 }
 
-}
+} // namespace sm3d

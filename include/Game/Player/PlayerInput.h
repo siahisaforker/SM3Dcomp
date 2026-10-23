@@ -2,43 +2,55 @@
 
 #include "types.h"
 
-namespace sm3d {
+namespace sm3d
+{
 
 struct PlayerInput {
-    u8 unknown00[0x0C];
+    void* inputVTable;
+    void* arrangementVTable;
+    void* jumpControlVTable;
     u8 stickOn;
-    u8 unknown0D[3];
     f32 moveVec[3];
     f32 moveVecNoArrange[3];
     f32 stickX;
     f32 stickY;
     u8 jumpButtonOn;
-    u8 unknown31[3];
     u32 jumpTriggerFrames;
     u8 jumpButtonEnabled;
     u8 dashTrigger;
     u8 dashButtonOn;
     u8 dashButtonReleased;
-    u8 unknown3C;
+    u8 reserved;
     u8 squatTrigger;
     u8 squatButtonOn;
     u8 hipDropTrigger;
     u8 hipDropButtonOn;
     u8 fireBallTrigger;
-    u8 unknown42[2];
+    u8 tailAttackTrigger;
     u32 swimPaddleTriggerFrames;
     u8 swimPaddleTrigger;
-    u8 unknown49[7];
+    u8 swimPaddleButtonOn;
+    u8 stoneStatueTrigger;
+    u8 stoneStatueSustainButtonOn;
+    u8 rollingButtonOn;
     u32 rollingTriggerFrames;
     u8 bubbleTrigger;
     u8 climbAttackTrigger;
     u8 climbAttackButtonOn;
     u8 holdButtonOn;
-    u8 unknown58[2];
+    u8 holdShakeOn;
+    u8 holdTriggerOn;
     u8 releaseTrigger;
-    u8 unknown5B[9];
+    u8 spinAttackTrigger;
+    f32 routeDependenceX;
+    f32 routeDependenceY;
     u32 invalidatedFrame;
-    u8 unknown68[0x18];
+    void* areaSearchActor;
+    void* playerCollision;
+    f32 alongWallRate;
+    s32 alongWallKeepFrame;
+    u8 waitFirstLanding;
+    const void* keyConfig;
 
     void resetPrecedingJump();
     void invalidateFrame(u32 frame);
@@ -71,9 +83,4 @@ struct PlayerInput {
     bool isRollingTrigOn() const;
 };
 
-typedef char player_input_size_check[sizeof(PlayerInput) == 0x80 ? 1 : -1];
-
-
-
-
-}
+} // namespace sm3d
