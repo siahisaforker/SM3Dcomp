@@ -9,7 +9,7 @@ A matching decompilation of **Super Mario 3D World (Wii U)**
 ## Status
 | Metric | Matched |
 | --- | --- |
-| Code | 308 / 7,335,668 bytes (0.0042%) |
+| Code | 332 / 7,335,668 bytes (0.0045%) |
 | Data | 0 / 4,036,468 initialized bytes (0%; not started) |
 
 Progress reports are published via [ByteMatch](https://bytematch.dev/siahisaforker/SM3Dcomp).

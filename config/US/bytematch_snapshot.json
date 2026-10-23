@@ -21,10 +21,10 @@
     "config/US/build.sha256": "a00e9542ffe18983b2bd2291c51291b9953dd5c219045457113fce0c5d5ae363",
     "config/US/config.yml": "3a7b148426d1fe3d0bae6842bbe4dd89594363edd962c6e85cbf44d35c683623",
     "config/US/fuzzy_functions.json": "6a16b22eed1b0d0b97b02510f8e154e20f17adf1bcbd2f1babd0bc3f45430775",
-    "config/US/splits.txt": "da94ca64e550495d127a30913b675a309a9e84d7e5401d3ecac924fc277dd30f",
-    "config/US/symbols.txt": "da3a0fa6cca10a9141997a0483f36a30b93da053e3f31684429fdb3c307ef36c",
-    "config/US/undefined_funcs.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-    "config/US/undefined_syms.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "config/US/splits.txt": "0f77a8dc3973d22bd704f171f36b31c27f173bfa26ec4f0377d17118517c4e0e",
+    "config/US/symbols.txt": "5d310985b2e3525242e49fad0b0b3a0bb1355228dc65123852de40de102d1a80",
+    "config/US/undefined_funcs.txt": "bc21b61def64426925efa284a0bd87ab7ebc393c11c0b52632e9cddd2830f0cc",
+    "config/US/undefined_syms.txt": "c9b9f1a9b0076f66dfcfbdc13533fe61d1d55f7cfc1b86993fd2dd78c6dea317",
     "config/US/verified_symbols.txt": "674f1807e8c93b7f6526776c78f18d59d96eb4ebfaa0abdb8f51f63412cca8dd",
     "configure.py": "7ba566762f0d4b204e4b5fd986310800428ac86e2b6a0da206e34635622ed928",
     "include/Game/Player/PlayerActionAirMove.h": "379ed483a7ac89b850cec22586e7dc48d0320879eb1462ed3195a92dea46e0c2",
@@ -88,7 +88,8 @@
     "src/Game/Player/PlayerInputFrame.cpp": "b7b4ab8d201622de91f98c154341a5642530ae653b1e01d792ddef6805f47cfb",
     "src/Game/Player/PlayerInputReset.cpp": "9c2e978eb972df7941084de02d1fee8ebc44ecd90ccd2fcd8da61e1cce72e496",
     "src/Game/Player/PlayerMovementCounter.cpp": "5713e7a21a9bc5f03f28514a264012fe108dfb5ac85d04ff6f4abb1f1f33a362",
-    "src/Game/Player/PlayerMovementCounterUpdate.cpp": "0ceacd3e2f90730c797ae07a687021f3bbe7f6fd2381ed1496a5480ac2804a7c"
+    "src/Game/Player/PlayerMovementCounterUpdate.cpp": "0ceacd3e2f90730c797ae07a687021f3bbe7f6fd2381ed1496a5480ac2804a7c",
+    "src/Game/Stage/StageArchive.cpp": "5e38ca607c0f48d60906cb8b2a5b712d5137911c61a9ee9e014c5eefcfb96ba0"
   },
   "matched_functions": [
     {
@@ -264,6 +265,12 @@
       "address": 36384896,
       "size": 24,
       "unit": "Game/Player/PlayerMovementCounter"
+    },
+    {
+      "name": "sm3d::StageArchive::formatPath",
+      "address": 38036836,
+      "size": 24,
+      "unit": "Game/Stage/StageArchive"
     }
   ],
   "fuzzy_functions": [
