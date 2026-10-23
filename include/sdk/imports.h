@@ -1,0 +1,26 @@
+#pragma once
+
+#include "sdk/imports/coreinit.h"
+#include "sdk/imports/gx2.h"
+#include "sdk/imports/ghs.h"
+#include "sdk/imports/mic.h"
+#include "sdk/imports/nn_acp.h"
+#include "sdk/imports/nn_save.h"
+#include "sdk/imports/nsysnet.h"
+#include "sdk/imports/padscore.h"
+#include "sdk/imports/snd_core.h"
+#include "sdk/imports/snd_user.h"
+#include "sdk/imports/sysapp.h"
+#include "sdk/imports/vpadbase.h"
+
+#include "sdk/imports/nlibcurl.h"
+#include "sdk/imports/zlib125.h"
+#include "sdk/imports/coreinit_runtime.h"
+#include "sdk/imports/extra.h"
+#include "sdk/nn/ac.h"
+#include "sdk/nn/act.h"
+#include "sdk/nn/fp.h"
+#include "sdk/nn/ndm.h"
+
+#include "sdk/nn/boss.h"
+#include "sdk/nn/olv.h"
