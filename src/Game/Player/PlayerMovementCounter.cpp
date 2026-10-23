@@ -1,8 +1,5 @@
 #include "Game/Player/PlayerMovementCounter.h"
 
-namespace sm3d
-{
-
 void PlayerMovementCounter::bindDependencies(PlayerMovementSource* movement,
                                              PlayerMovementCollision* collision,
                                              PlayerMovementInput* input,
@@ -17,5 +14,3 @@ void PlayerMovementCounter::bindDependencies(PlayerMovementSource* movement,
     ordered->collision = collision;
     ordered->property = property;
 }
-
-} // namespace sm3d

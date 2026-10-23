@@ -2,9 +2,6 @@
 
 #include "Game/Player/PlayerMovementTypes.h"
 
-namespace sm3d
-{
-
 extern "C"
 {
     PlayerMovementState* getMovementState(PlayerMovementSource* source);
@@ -66,5 +63,3 @@ void PlayerMovementCounter::update()
     }
     frameCount = 0;
 }
-
-} // namespace sm3d

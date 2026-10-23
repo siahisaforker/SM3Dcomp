@@ -1,121 +1,116 @@
-#include "Game/Player/PlayerInput.h"
-
-namespace sm3d
-{
+#include "Game/Player/Normal/PlayerInput.h"
 
 void PlayerInput::disableJumpButton()
 {
-    jumpButtonEnabled = 0;
+    mIsJumpButtonEnabled = 0;
 }
 
 void PlayerInput::enableJumpButton()
 {
-    jumpButtonEnabled = 1;
+    mIsJumpButtonEnabled = 1;
 }
 
 u8 PlayerInput::isStickOn() const
 {
-    return stickOn;
+    return mIsStickOn;
 }
 
-const f32* PlayerInput::getMoveVec() const
+const sead::Vector3f& PlayerInput::getMoveVec() const
 {
-    return moveVec;
+    return mMoveVec;
 }
 
-const f32* PlayerInput::getMoveVecNoArrange() const
+const sead::Vector3f& PlayerInput::getMoveVecNoArrange() const
 {
-    return moveVecNoArrange;
+    return mMoveVecNoArrange;
 }
 
 f32 PlayerInput::getStickX() const
 {
-    return stickX;
+    return mStick.x;
 }
 
 f32 PlayerInput::getStickY() const
 {
-    return stickY;
+    return mStick.y;
 }
 
-u32 PlayerInput::getFrameFromLastJumpTrig() const
+s32 PlayerInput::getFrameFromLastJumpTrig() const
 {
-    return jumpTriggerFrames;
+    return mFrameFromLastJumpTrig;
 }
 
 u8 PlayerInput::isJumpButtonOn() const
 {
-    return jumpButtonOn;
+    return mIsJumpButtonOn;
 }
 
 u8 PlayerInput::isDashTrigOn() const
 {
-    return dashTrigger;
+    return mIsDashTrigOn;
 }
 
 u8 PlayerInput::isDashButtonOn() const
 {
-    return dashButtonOn;
+    return mIsDashButtonOn;
 }
 
 u8 PlayerInput::isDashButtonReleased() const
 {
-    return dashButtonReleased;
+    return mIsDashButtonReleased;
 }
 
 u8 PlayerInput::isSquatTrigOn() const
 {
-    return squatTrigger;
+    return mIsSquatTrigOn;
 }
 
 u8 PlayerInput::isSquatButtonOn() const
 {
-    return squatButtonOn;
+    return mIsSquatButtonOn;
 }
 
 u8 PlayerInput::isHipDropTrigOn() const
 {
-    return hipDropTrigger;
+    return mIsHipDropTrigOn;
 }
 
 u8 PlayerInput::isHipDropButtonOn() const
 {
-    return hipDropButtonOn;
+    return mIsHipDropButtonOn;
 }
 
 u8 PlayerInput::isFireBallTrigOn() const
 {
-    return fireBallTrigger;
+    return mIsFireBallTrigOn;
 }
 
 u8 PlayerInput::isSwimPaddleTrigOn() const
 {
-    return swimPaddleTrigger;
+    return mIsSwimPaddleTrigOn;
 }
 
 u8 PlayerInput::isBubbleTrigOn() const
 {
-    return bubbleTrigger;
+    return mIsBubbleTrigOn;
 }
 
 u8 PlayerInput::isClimbAttackTrigOn() const
 {
-    return climbAttackTrigger;
+    return mIsClimbAttackTrigOn;
 }
 
 u8 PlayerInput::isClimbAttackButtonOn() const
 {
-    return climbAttackButtonOn;
+    return mIsClimbAttackButtonOn;
 }
 
 u8 PlayerInput::isHoldButtonOn() const
 {
-    return holdButtonOn;
+    return mIsHoldButtonOn;
 }
 
 u8 PlayerInput::isReleaseTrigOn() const
 {
-    return releaseTrigger;
+    return mIsReleaseTrigOn;
 }
-
-} // namespace sm3d

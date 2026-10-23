@@ -1,6 +1,6 @@
 [
   {
-    "name": "sm3d::PlayerMovementCounter::update",
+    "name": "PlayerMovementCounter::update",
     "unit": "Game/Player/PlayerMovementCounterUpdate",
     "source_path": "src/Game/Player/PlayerMovementCounterUpdate.cpp",
     "address": "0x022B3098",

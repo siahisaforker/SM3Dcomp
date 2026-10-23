@@ -2,9 +2,6 @@
 
 #include "types.h"
 
-namespace sm3d
-{
-
 struct Vec3f {
     f32 x;
     f32 y;
@@ -32,5 +29,3 @@ struct PlayerMovementOwner {
     f32 getThreshold();
     u32 getMaximumFrames();
 };
-
-} // namespace sm3d

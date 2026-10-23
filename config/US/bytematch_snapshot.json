@@ -20,21 +20,22 @@
     "CMakeLists.txt": "732561aa8aabf108a91e1fcb2d79f882bd6882648be704bd4c8bb29566649495",
     "config/US/build.sha256": "a00e9542ffe18983b2bd2291c51291b9953dd5c219045457113fce0c5d5ae363",
     "config/US/config.yml": "3a7b148426d1fe3d0bae6842bbe4dd89594363edd962c6e85cbf44d35c683623",
-    "config/US/fuzzy_functions.json": "6a16b22eed1b0d0b97b02510f8e154e20f17adf1bcbd2f1babd0bc3f45430775",
-    "config/US/splits.txt": "0f77a8dc3973d22bd704f171f36b31c27f173bfa26ec4f0377d17118517c4e0e",
-    "config/US/symbols.txt": "5d310985b2e3525242e49fad0b0b3a0bb1355228dc65123852de40de102d1a80",
-    "config/US/undefined_funcs.txt": "bc21b61def64426925efa284a0bd87ab7ebc393c11c0b52632e9cddd2830f0cc",
+    "config/US/fuzzy_functions.json": "5dc119faf36fa6b0ac4627f9bf7d9d7df3e027cc0241fc6992d68c0abb1a3399",
+    "config/US/splits.txt": "b01a0652b52c62a228b9ae7f35bab871c4a84cdcaef1100b4a8b423c02740826",
+    "config/US/symbols.txt": "8756b8da1f78971380e90f2d6d404bfdf9503fd5491046096df835877e3099d8",
+    "config/US/undefined_funcs.txt": "a4ba8da3f6c2f67491e576508c0d9824a16aac0c95976ed0d280ac75948c9d38",
     "config/US/undefined_syms.txt": "c9b9f1a9b0076f66dfcfbdc13533fe61d1d55f7cfc1b86993fd2dd78c6dea317",
     "config/US/verified_symbols.txt": "674f1807e8c93b7f6526776c78f18d59d96eb4ebfaa0abdb8f51f63412cca8dd",
     "configure.py": "7ba566762f0d4b204e4b5fd986310800428ac86e2b6a0da206e34635622ed928",
-    "include/Game/Player/PlayerActionAirMove.h": "379ed483a7ac89b850cec22586e7dc48d0320879eb1462ed3195a92dea46e0c2",
-    "include/Game/Player/PlayerConstParam.h": "0197820fdb3987d33ca43e0d511291240355398ad658398d8f0e39827f2a7bcd",
-    "include/Game/Player/PlayerInput.h": "f101f3f274b9c7a2cf09bd5a19b92b5365b7dcd4fcc659e1805d68eb6f08ed2f",
-    "include/Game/Player/PlayerMovementCounter.h": "eebf0aac4d248e3b4279468a315ed42fbffcae7e7ad5e0351a7c5f5ecf762579",
-    "include/Game/Player/PlayerMovementTypes.h": "b651eee85012028247a4cacc41d3dfb5152c205353bd6eac7e2a1dd7fe38f2d9",
-    "include/Game/Player/PlayerParam.h": "7812e22d72bae47fdbabe36a71dc45da506a327127a25c9b12d76c8af2ff6f30",
-    "include/Game/Stage/StageArchive.h": "1341c65d4a9f46d5988a6b39314fb3d7b4b531ae044ad75232e6a2bc46bf99b8",
-    "include/Game/Stage/StageDesignArchive.h": "0e23b832c142191f7e4321891d068ba64fb7c6d68146ccde82d5ccf9cf9fc0f6",
+    "include/Game/Player/Normal/PlayerConstParam.h": "d4088a64ea9ca4de2c90e9474ece42c5d583fa723d655b64ec29309a6385331b",
+    "include/Game/Player/Normal/PlayerInput.h": "02b3ebf179aba496705ab5927a0455a1b9b176a2b70783cf402b92a2972c24d7",
+    "include/Game/Player/PlayerActionAirMove.h": "3bcd65450a1ccdd04c9bdebce011b6ec16716096c992a8203d4f2363ddb1d0d0",
+    "include/Game/Player/PlayerMovementCounter.h": "7541fa1ca5ebe4e6077ac7d7b653f811204eeef90d27b01908f0017f59021b99",
+    "include/Game/Player/PlayerMovementTypes.h": "c3f80ee59e09b757e8d98077d2544aa97ea09df9877176dafffd11fbaabb681b",
+    "include/Game/Player/PlayerParam.h": "f4ed2dd69bc402d5c1c07a6dba2073537640fb3cdc986cd320513d7956867126",
+    "include/Game/Stage/StageArchive.h": "081a8d077998d4324013f48815828d919323561bff4d376c7f3d4c410373d8c2",
+    "include/Game/Stage/StageDesignArchive.h": "b987c60fd21ff4960e15d8198260eb91dc2c0d62a3568e8ea34720c985ac0021",
+    "include/math/seadVector.h": "082afaa8dcacc4e34372faf1890e4eb229afaaa0b32c347f83bf9f04330b8349",
     "include/sdk/coreinit/alarm.h": "dcb2be700e4b9b280e2767d9b4c731079ed36f7e2c9281fb6524c867a8d4c6ee",
     "include/sdk/coreinit/default_heap.h": "b8313f0ef3dcb37ecb7cb88810cc4ed1b721ee7a411c819ef3acc1326e45106d",
     "include/sdk/coreinit/filesystem.h": "27b6e8364c9dac85216a51f3a40d5599deb163d98dd3c4920e4448ade28e7434",
@@ -82,192 +83,192 @@
     "include/sdk/readme.txt": "7022e0b9f66352d3613bbb968cfdeb95994b65f0abdc1174ccc8db02ba5a6b18",
     "include/sdk/snd_core.h": "41d4e3a604d44ae3ab99bad92e664a1da6a2a75d45eb71af838ef5ba64320f38",
     "include/sdk/vpad.h": "ae70b2b52503efb1fc8879b3c70dda0669fb3a16d4e37256c5927535b415d01b",
-    "include/types.h": "a134f1c0b5e1e88396f1617ea332411c1927528ea1920fad12d483e340707e91",
-    "src/Game/Player/PlayerInput.cpp": "230a44fa2e34b9aae0eb4558e07205192551349dd7483cc94fd9c361a851eee0",
-    "src/Game/Player/PlayerInputAccessors.cpp": "d26b9f39cd152f1176bcec4415e0ab535a4dec679cc933004bb3dd5af6bb81b4",
-    "src/Game/Player/PlayerInputFrame.cpp": "b7b4ab8d201622de91f98c154341a5642530ae653b1e01d792ddef6805f47cfb",
-    "src/Game/Player/PlayerInputReset.cpp": "9c2e978eb972df7941084de02d1fee8ebc44ecd90ccd2fcd8da61e1cce72e496",
-    "src/Game/Player/PlayerMovementCounter.cpp": "5713e7a21a9bc5f03f28514a264012fe108dfb5ac85d04ff6f4abb1f1f33a362",
-    "src/Game/Player/PlayerMovementCounterUpdate.cpp": "0ceacd3e2f90730c797ae07a687021f3bbe7f6fd2381ed1496a5480ac2804a7c",
-    "src/Game/Stage/StageArchive.cpp": "5e38ca607c0f48d60906cb8b2a5b712d5137911c61a9ee9e014c5eefcfb96ba0"
+    "include/types.h": "a50675b4cac0bfcebb9743de3cb684dc6b97e8615a6f8ebdc3d252a1837aeaf3",
+    "src/Game/Player/Normal/PlayerInput.cpp": "a5905748f62d430f43706714a8b21ef809a4a58e3ea0b9e4a40f1cd260e1f4ae",
+    "src/Game/Player/Normal/PlayerInputAccessors.cpp": "b381f0c26cf2725d2fef8a1c58a7b3217b3493b14f8a97ac0884ed416f1a9f10",
+    "src/Game/Player/Normal/PlayerInputFrame.cpp": "1aa543f798ecf79ba737c1f4d459181bdd420f60c614082439aad935ddaa1ee7",
+    "src/Game/Player/Normal/PlayerInputReset.cpp": "e74f96dc74e9519ba9931b460dfda8f2abef3e7c4665b30cc496f4b346b55ed3",
+    "src/Game/Player/PlayerMovementCounter.cpp": "ad379e8650563b5c6d83d061f78549395d96503363245161efc35507b263a250",
+    "src/Game/Player/PlayerMovementCounterUpdate.cpp": "eb9f605bc69f59ff0fc0d6ddac774e4d0171c4828505a09c95216e4733da8157",
+    "src/Game/Stage/StageArchive.cpp": "b031b29bb93aebd7c07b407edbaacd9fab7b320a37f6500ad060156381bdb3e3"
   },
   "matched_functions": [
     {
-      "name": "sm3d::PlayerInput::resetPrecedingJump",
+      "name": "PlayerInput::resetPrecedingJump",
       "address": 36379212,
       "size": 24,
-      "unit": "Game/Player/PlayerInputReset"
+      "unit": "Game/Player/Normal/PlayerInputReset"
     },
     {
-      "name": "sm3d::PlayerInput::invalidateFrame",
+      "name": "PlayerInput::invalidateFrame",
       "address": 36379244,
       "size": 8,
-      "unit": "Game/Player/PlayerInputFrame"
+      "unit": "Game/Player/Normal/PlayerInputFrame"
     },
     {
-      "name": "sm3d::PlayerInput::isJumpTrigOn",
+      "name": "PlayerInput::isJumpTrigOn",
       "address": 36384552,
       "size": 20,
-      "unit": "Game/Player/PlayerInput"
+      "unit": "Game/Player/Normal/PlayerInput"
     },
     {
-      "name": "sm3d::PlayerInput::isPrecedingSwimPaddleTrigOn",
+      "name": "PlayerInput::isPrecedingSwimPaddleTrigOn",
       "address": 36384572,
       "size": 20,
-      "unit": "Game/Player/PlayerInput"
+      "unit": "Game/Player/Normal/PlayerInput"
     },
     {
-      "name": "sm3d::PlayerInput::isRollingTrigOn",
+      "name": "PlayerInput::isRollingTrigOn",
       "address": 36384592,
       "size": 20,
-      "unit": "Game/Player/PlayerInput"
+      "unit": "Game/Player/Normal/PlayerInput"
     },
     {
-      "name": "sm3d::PlayerInput::disableJumpButton",
+      "name": "PlayerInput::disableJumpButton",
       "address": 36384612,
       "size": 12,
-      "unit": "Game/Player/PlayerInputAccessors"
+      "unit": "Game/Player/Normal/PlayerInputAccessors"
     },
     {
-      "name": "sm3d::PlayerInput::enableJumpButton",
+      "name": "PlayerInput::enableJumpButton",
       "address": 36384624,
       "size": 12,
-      "unit": "Game/Player/PlayerInputAccessors"
+      "unit": "Game/Player/Normal/PlayerInputAccessors"
     },
     {
-      "name": "sm3d::PlayerInput::isStickOn",
+      "name": "PlayerInput::isStickOn",
       "address": 36384636,
       "size": 8,
-      "unit": "Game/Player/PlayerInputAccessors"
+      "unit": "Game/Player/Normal/PlayerInputAccessors"
     },
     {
-      "name": "sm3d::PlayerInput::getMoveVec",
+      "name": "PlayerInput::getMoveVec",
       "address": 36384644,
       "size": 8,
-      "unit": "Game/Player/PlayerInputAccessors"
+      "unit": "Game/Player/Normal/PlayerInputAccessors"
     },
     {
-      "name": "sm3d::PlayerInput::getMoveVecNoArrange",
+      "name": "PlayerInput::getMoveVecNoArrange",
       "address": 36384652,
       "size": 8,
-      "unit": "Game/Player/PlayerInputAccessors"
+      "unit": "Game/Player/Normal/PlayerInputAccessors"
     },
     {
-      "name": "sm3d::PlayerInput::getStickX",
+      "name": "PlayerInput::getStickX",
       "address": 36384660,
       "size": 8,
-      "unit": "Game/Player/PlayerInputAccessors"
+      "unit": "Game/Player/Normal/PlayerInputAccessors"
     },
     {
-      "name": "sm3d::PlayerInput::getStickY",
+      "name": "PlayerInput::getStickY",
       "address": 36384668,
       "size": 8,
-      "unit": "Game/Player/PlayerInputAccessors"
+      "unit": "Game/Player/Normal/PlayerInputAccessors"
     },
     {
-      "name": "sm3d::PlayerInput::getFrameFromLastJumpTrig",
+      "name": "PlayerInput::getFrameFromLastJumpTrig",
       "address": 36384676,
       "size": 8,
-      "unit": "Game/Player/PlayerInputAccessors"
+      "unit": "Game/Player/Normal/PlayerInputAccessors"
     },
     {
-      "name": "sm3d::PlayerInput::isJumpButtonOn",
+      "name": "PlayerInput::isJumpButtonOn",
       "address": 36384684,
       "size": 8,
-      "unit": "Game/Player/PlayerInputAccessors"
+      "unit": "Game/Player/Normal/PlayerInputAccessors"
     },
     {
-      "name": "sm3d::PlayerInput::isDashTrigOn",
+      "name": "PlayerInput::isDashTrigOn",
       "address": 36384692,
       "size": 8,
-      "unit": "Game/Player/PlayerInputAccessors"
+      "unit": "Game/Player/Normal/PlayerInputAccessors"
     },
     {
-      "name": "sm3d::PlayerInput::isDashButtonOn",
+      "name": "PlayerInput::isDashButtonOn",
       "address": 36384700,
       "size": 8,
-      "unit": "Game/Player/PlayerInputAccessors"
+      "unit": "Game/Player/Normal/PlayerInputAccessors"
     },
     {
-      "name": "sm3d::PlayerInput::isDashButtonReleased",
+      "name": "PlayerInput::isDashButtonReleased",
       "address": 36384708,
       "size": 8,
-      "unit": "Game/Player/PlayerInputAccessors"
+      "unit": "Game/Player/Normal/PlayerInputAccessors"
     },
     {
-      "name": "sm3d::PlayerInput::isSquatTrigOn",
+      "name": "PlayerInput::isSquatTrigOn",
       "address": 36384716,
       "size": 8,
-      "unit": "Game/Player/PlayerInputAccessors"
+      "unit": "Game/Player/Normal/PlayerInputAccessors"
     },
     {
-      "name": "sm3d::PlayerInput::isSquatButtonOn",
+      "name": "PlayerInput::isSquatButtonOn",
       "address": 36384724,
       "size": 8,
-      "unit": "Game/Player/PlayerInputAccessors"
+      "unit": "Game/Player/Normal/PlayerInputAccessors"
     },
     {
-      "name": "sm3d::PlayerInput::isHipDropTrigOn",
+      "name": "PlayerInput::isHipDropTrigOn",
       "address": 36384732,
       "size": 8,
-      "unit": "Game/Player/PlayerInputAccessors"
+      "unit": "Game/Player/Normal/PlayerInputAccessors"
     },
     {
-      "name": "sm3d::PlayerInput::isHipDropButtonOn",
+      "name": "PlayerInput::isHipDropButtonOn",
       "address": 36384740,
       "size": 8,
-      "unit": "Game/Player/PlayerInputAccessors"
+      "unit": "Game/Player/Normal/PlayerInputAccessors"
     },
     {
-      "name": "sm3d::PlayerInput::isFireBallTrigOn",
+      "name": "PlayerInput::isFireBallTrigOn",
       "address": 36384748,
       "size": 8,
-      "unit": "Game/Player/PlayerInputAccessors"
+      "unit": "Game/Player/Normal/PlayerInputAccessors"
     },
     {
-      "name": "sm3d::PlayerInput::isSwimPaddleTrigOn",
+      "name": "PlayerInput::isSwimPaddleTrigOn",
       "address": 36384756,
       "size": 8,
-      "unit": "Game/Player/PlayerInputAccessors"
+      "unit": "Game/Player/Normal/PlayerInputAccessors"
     },
     {
-      "name": "sm3d::PlayerInput::isBubbleTrigOn",
+      "name": "PlayerInput::isBubbleTrigOn",
       "address": 36384764,
       "size": 8,
-      "unit": "Game/Player/PlayerInputAccessors"
+      "unit": "Game/Player/Normal/PlayerInputAccessors"
     },
     {
-      "name": "sm3d::PlayerInput::isClimbAttackTrigOn",
+      "name": "PlayerInput::isClimbAttackTrigOn",
       "address": 36384772,
       "size": 8,
-      "unit": "Game/Player/PlayerInputAccessors"
+      "unit": "Game/Player/Normal/PlayerInputAccessors"
     },
     {
-      "name": "sm3d::PlayerInput::isClimbAttackButtonOn",
+      "name": "PlayerInput::isClimbAttackButtonOn",
       "address": 36384780,
       "size": 8,
-      "unit": "Game/Player/PlayerInputAccessors"
+      "unit": "Game/Player/Normal/PlayerInputAccessors"
     },
     {
-      "name": "sm3d::PlayerInput::isHoldButtonOn",
+      "name": "PlayerInput::isHoldButtonOn",
       "address": 36384788,
       "size": 8,
-      "unit": "Game/Player/PlayerInputAccessors"
+      "unit": "Game/Player/Normal/PlayerInputAccessors"
     },
     {
-      "name": "sm3d::PlayerInput::isReleaseTrigOn",
+      "name": "PlayerInput::isReleaseTrigOn",
       "address": 36384796,
       "size": 8,
-      "unit": "Game/Player/PlayerInputAccessors"
+      "unit": "Game/Player/Normal/PlayerInputAccessors"
     },
     {
-      "name": "sm3d::PlayerMovementCounter::bindDependencies",
+      "name": "PlayerMovementCounter::bindDependencies",
       "address": 36384896,
       "size": 24,
       "unit": "Game/Player/PlayerMovementCounter"
     },
     {
-      "name": "sm3d::StageArchive::formatPath",
+      "name": "StageArchive::formatPath",
       "address": 38036836,
       "size": 24,
       "unit": "Game/Stage/StageArchive"
@@ -275,7 +276,7 @@
   ],
   "fuzzy_functions": [
     {
-      "name": "sm3d::PlayerMovementCounter::update",
+      "name": "PlayerMovementCounter::update",
       "unit": "Game/Player/PlayerMovementCounterUpdate",
       "source_path": "src/Game/Player/PlayerMovementCounterUpdate.cpp",
       "address": 36384920,

@@ -2,9 +2,6 @@
 
 #include "types.h"
 
-namespace sm3d
-{
-
 struct PlayerMovementSource;
 struct PlayerMovementCollision;
 struct PlayerMovementInput;
@@ -25,5 +22,3 @@ struct PlayerMovementCounter {
                           PlayerMovementOwner* player);
     void update();
 };
-
-} // namespace sm3d
