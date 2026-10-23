@@ -19,7 +19,7 @@ from configure import (
     is_verification_fresh,
     load_project,
     load_symbols,
-    load_undefined_maps,
+    load_linker_symbols,
     load_units,
 )
 
@@ -27,7 +27,6 @@ VERSION = "US"
 SNAPSHOT = ROOT / "config" / VERSION / "bytematch_snapshot.json"
 OUTPUT = ROOT / "build" / VERSION / "bytematch" / "report.json"
 FUZZY_MANIFEST = ROOT / "config" / VERSION / "fuzzy_functions.json"
-TEXT_BASE = 0x02000020
 INVENTORY_FUNCTIONS = 30964
 
 
@@ -36,10 +35,11 @@ def fail(message):
 
 
 def input_hashes():
-    files = [ROOT / "configure.py", ROOT / "CMakeLists.txt", ROOT / "tools" / "validate_splits.py"]
+    files = [ROOT / "configure.py", ROOT / "CMakeLists.txt", ROOT / "configure.py"]
     for directory in (ROOT / "config" / VERSION, ROOT / "src", ROOT / "include"):
         files.extend(path for path in directory.rglob("*") if path.is_file()
-                     and path != SNAPSHOT and "__pycache__" not in path.parts)
+                     and path != SNAPSHOT and "__pycache__" not in path.parts
+                     and path.parent != ROOT / "config" / VERSION / "imports")
     return {str(path.relative_to(ROOT)): file_sha256(path)
             for path in sorted(files)}
 
@@ -81,7 +81,7 @@ def project_units():
 
 
 def unit_match_records(project, units):
-    undefined = load_undefined_maps(ROOT, project.undefined_maps + project.import_maps)
+    undefined = load_linker_symbols(ROOT, project)
     build_root = ROOT / "build" / VERSION
     records = []
     for unit in units:
@@ -181,7 +181,7 @@ def measure_fuzzy(project):
 
 
 def create_snapshot():
-    subprocess.run([sys.executable, "tools/validate_splits.py"], cwd=ROOT, check=True)
+    subprocess.run([sys.executable, "configure.py", "validate"], cwd=ROOT, check=True)
     subprocess.run(["ninja", "-j2", "progress"], cwd=ROOT, check=True)
     project, units = project_units()
     if file_sha256(ROOT / project.object) != project.sha256:
@@ -298,8 +298,8 @@ def build_report():
                 compiled_size % 4 or type(matches) is not int or
                 not 0 < matches <= min(compiled_size, item["size"]) // 4):
             fail("invalid measured fuzzy similarity")
-        if (address < TEXT_BASE or address + item["size"] >
-                TEXT_BASE + project.text_size):
+        if (address < project.text_address or address + item["size"] >
+                project.text_address + project.text_size):
             fail("fuzzy candidate is outside executable .text")
         extent = (address, address + item["size"])
         if any(extent[0] < end and start < extent[1] for start, end in fuzzy_seen):
@@ -367,7 +367,7 @@ def build_report():
             "measures": measures(item["size"], total_functions=1, total_units=1,
                                  fuzzy_code=fuzzy_bytes),
             "functions": [{"name": item["name"], "size": str(item["size"]),
-                           "address": str(item["address"] - TEXT_BASE),
+                           "address": str(item["address"] - project.text_address),
                            "fuzzy_match_percent": fuzzy_score,
                            "metadata": {"virtual_address": str(item["address"])}}],
             "metadata": {"complete": False, "source_path": item["source_path"],
