@@ -11,3 +11,4 @@ BraceWrapping:
   AfterControlStatement: Always
 AllowShortFunctionsOnASingleLine: None
 IndentExternBlock: Indent
+AllowShortEnumsOnASingleLine: false
