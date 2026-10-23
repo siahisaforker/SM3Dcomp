@@ -1,0 +1,1 @@
+These are pretty much all just pasted directly from wut, so do with that what you will
