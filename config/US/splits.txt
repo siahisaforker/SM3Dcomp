@@ -1,2 +1,10 @@
 Game/Player/PlayerInput.cpp:
     .text start:0x022b2f28 end:0x022b2f64
+Game/Player/PlayerInputReset.cpp:
+    .text start:0x022b1a4c end:0x022b1a64
+
+Game/Player/PlayerInputFrame.cpp:
+    .text start:0x022b1a6c end:0x022b1a74
+
+Game/Player/PlayerInputAccessors.cpp:
+    .text start:0x022b2f64 end:0x022b3024

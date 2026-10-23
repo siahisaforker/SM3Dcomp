@@ -35,7 +35,7 @@ python3 tools/bytematch_report.py check
 
 - `total_code` is the original US RPX's 7,335,668-byte `.text` region.
 - `matched_code` is the sum of function sizes from the verified snapshot, whose matches must agree with strict local build verification.
-- `total_functions` currently uses **30,941 provisional Ghidra function entries**, including functions with noncontiguous bodies. This is an *estimate*, not a verified function total or original object split count; the function badge should be interpreted accordingly.
+- `total_functions` currently uses **30,964 provisional Ghidra function entries**, including functions with noncontiguous bodies. This is an *estimate*, not a verified function total or original object split count; the function badge should be interpreted accordingly.
 - Currently verified source files are displayed as their own units; all code not assigned to a known split appears under **Unmapped .text (not an original object split)**. The unmapped unit is for coverage accounting only, **not** a recovered original translation unit.
 - ByteMatch currently tracks code only. No matched data is claimed.
 

@@ -21,21 +21,25 @@ class ByteMatchReportTests(unittest.TestCase):
                              for unit in report["units"]), measures["matched_functions"])
         self.assertEqual(sum(unit["measures"]["total_functions"]
                              for unit in report["units"]), measures["total_functions"])
-        self.assertEqual(measures["matched_code"], "60")
+        snapshot = json.loads(bytematch.SNAPSHOT.read_text(encoding="utf-8"))
+        self.assertEqual(int(measures["matched_code"]), sum(item["size"] for item in snapshot["matched_functions"]))
         self.assertEqual(measures["total_code"], "7335668")
-        self.assertEqual(measures["matched_functions"], 3)
-        self.assertEqual(measures["total_functions"], 30941)
+        self.assertEqual(measures["matched_functions"], len(snapshot["matched_functions"]))
+        self.assertEqual(measures["total_functions"], snapshot["estimated_total_functions"])
 
     def test_verified_source_paths(self):
         report = bytematch.build_report()
         matched = [unit for unit in report["units"] if unit["measures"]["matched_code"] != "0"]
-        self.assertEqual(len(matched), 1)
-        self.assertEqual(matched[0]["metadata"]["source_path"],
-                         "src/Game/Player/PlayerInput.cpp")
-        self.assertEqual(sum(int(fn["size"]) for fn in matched[0]["functions"]), 60)
+        self.assertTrue(any(unit["metadata"]["source_path"] ==
+                            "src/Game/Player/PlayerInput.cpp" for unit in matched))
+        self.assertEqual(sum(int(unit["measures"]["matched_code"]) for unit in matched),
+                         int(report["measures"]["matched_code"]))
+        self.assertTrue(all(unit["metadata"]["source_path"].startswith("src/")
+                            for unit in matched))
         self.assertTrue(all(fn["fuzzy_match_percent"] == 100.0
-                            for fn in matched[0]["functions"]))
-        self.assertEqual(len(report["units"]), 2)
+                            for unit in matched for fn in unit["functions"]))
+        self.assertTrue(any(unit["name"].startswith("Unmapped .text")
+                            for unit in report["units"]))
 
     def test_stale_source_is_rejected(self):
         hashes = bytematch.input_hashes()

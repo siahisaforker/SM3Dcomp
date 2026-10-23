@@ -58,4 +58,4 @@ tools/analyzeHeadless /path/to/ghidra-projects PROJECT_NAME \
   -postScript ExportFunctionInventory.java .local/function_inventory.txt
 ```
 
-The current local analysis identified 30,941 function entries, of which 86 have fragmented bodies. This count is not a measure of decompilation progress. The export is intentionally ignored, and includes tentative Ghidra function names; manually verify function extents and original object boundaries before editing `splits.txt`.
+The current local analysis identified 30,964 function entries, of which 86 have fragmented bodies. This count is not a measure of decompilation progress. The export is intentionally ignored, and includes tentative Ghidra function names; manually verify function extents and original object boundaries before editing `splits.txt`.

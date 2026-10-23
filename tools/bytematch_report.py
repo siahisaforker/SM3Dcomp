@@ -22,7 +22,7 @@ from configure import (
 VERSION = "US"
 SNAPSHOT = ROOT / "config" / VERSION / "bytematch_snapshot.json"
 OUTPUT = ROOT / "build" / VERSION / "bytematch" / "report.json"
-INVENTORY_FUNCTIONS = 30941
+INVENTORY_FUNCTIONS = 30964
 
 
 def fail(message):

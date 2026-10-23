@@ -3,24 +3,39 @@
   "game_version": "US",
   "rpx_sha256": "813d906365860eb6ef4644e8380983db382cbaefd951f9a89bd3d2c84eb4aaad",
   "total_code": 7335668,
-  "estimated_total_functions": 30941,
+  "estimated_total_functions": 30964,
   "inputs": {
     "CMakeLists.txt": "732561aa8aabf108a91e1fcb2d79f882bd6882648be704bd4c8bb29566649495",
     "config/US/build.sha256": "a00e9542ffe18983b2bd2291c51291b9953dd5c219045457113fce0c5d5ae363",
     "config/US/config.yml": "2d581b5cef1c08d530b7fc1178c58bde94969500a0389c8f8c216654802ca5c6",
     "config/US/imports/gx2.txt": "4329cbdb93cba1b56bf621e0884f30dacc96af2a9c1d8459b7419da708fd5aa7",
-    "config/US/splits.txt": "ee0dd049753fc007292c9a8a791e8af88320f0e2cb0560a7102fe715af1e6c5e",
-    "config/US/symbols.txt": "c085305211445ce38a3dc586daaa50c56529d79ea771a55d888ca51082377e6b",
+    "config/US/splits.txt": "75e6aafdd523fa11bfccb59ffb06450b328dea3664ff647c339a64dc2e1b18ca",
+    "config/US/symbols.txt": "0083b9fd56c7b083717d1689cbd3bfac1c67a82c194a1dd692d7dffba6d0f11c",
     "config/US/undefined_funcs.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "config/US/undefined_syms.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-    "config/US/verified_symbols.txt": "3e22f8232892c4448b980527746555b3fe870c96cb203f416c1c0864d611a267",
+    "config/US/verified_symbols.txt": "64b0c2dccdedcba9c3d70a544ea21abc4884c5f0ea9acd875cc70f3d7309c29b",
     "configure.py": "12f2ec4ea79f80b35614fb4325250261b94297bb0053bf822d17625797df17e1",
-    "include/Game/Player/PlayerInput.h": "4ff6d4e14fd76d63dbde1503c543763ea16038f5e943db2b1adec64022e01e1f",
+    "include/Game/Player/PlayerInput.h": "ac092fc4b9aedc4b37ad86e2985887a3f0ad7d6187284f70210596e5ba981d23",
     "include/types.h": "0fd77ca083d726f9f27cdf8179a799b7ff16e1c54b6dcb025d2c78bc15450359",
     "src/Game/Player/PlayerInput.cpp": "61d4ddfd07402e0509e0f799bc4260cb53ea02ff91aeac7967a4fb1de0b42e6f",
+    "src/Game/Player/PlayerInputAccessors.cpp": "db5311f8362d17067de291d72b3d23756c56e4ff2b191111b65e2ce295f7af0a",
+    "src/Game/Player/PlayerInputFrame.cpp": "640150228464ba44a041de23e0d44168382cd7f984be2698b0e300354dfef85d",
+    "src/Game/Player/PlayerInputReset.cpp": "77056a69b27c5ed1786fe47fec6fcc758c65f5345a0d78feeea2e79e02c6da75",
     "tools/validate_splits.py": "bf45e3af8d98fa530619446cab08cd4667c6706f71d0ee73551ca69554ff63fb"
   },
   "matched_functions": [
+    {
+      "name": "sm3d::PlayerInput::resetPrecedingJump",
+      "address": 36379212,
+      "size": 24,
+      "unit": "Game/Player/PlayerInputReset"
+    },
+    {
+      "name": "sm3d::PlayerInput::invalidateFrame",
+      "address": 36379244,
+      "size": 8,
+      "unit": "Game/Player/PlayerInputFrame"
+    },
     {
       "name": "sm3d::PlayerInput::isJumpTrigOn",
       "address": 36384552,
@@ -38,6 +53,144 @@
       "address": 36384592,
       "size": 20,
       "unit": "Game/Player/PlayerInput"
+    },
+    {
+      "name": "sm3d::PlayerInput::disableJumpButton",
+      "address": 36384612,
+      "size": 12,
+      "unit": "Game/Player/PlayerInputAccessors"
+    },
+    {
+      "name": "sm3d::PlayerInput::enableJumpButton",
+      "address": 36384624,
+      "size": 12,
+      "unit": "Game/Player/PlayerInputAccessors"
+    },
+    {
+      "name": "sm3d::PlayerInput::isStickOn",
+      "address": 36384636,
+      "size": 8,
+      "unit": "Game/Player/PlayerInputAccessors"
+    },
+    {
+      "name": "sm3d::PlayerInput::getMoveVec",
+      "address": 36384644,
+      "size": 8,
+      "unit": "Game/Player/PlayerInputAccessors"
+    },
+    {
+      "name": "sm3d::PlayerInput::getMoveVecNoArrange",
+      "address": 36384652,
+      "size": 8,
+      "unit": "Game/Player/PlayerInputAccessors"
+    },
+    {
+      "name": "sm3d::PlayerInput::getStickX",
+      "address": 36384660,
+      "size": 8,
+      "unit": "Game/Player/PlayerInputAccessors"
+    },
+    {
+      "name": "sm3d::PlayerInput::getStickY",
+      "address": 36384668,
+      "size": 8,
+      "unit": "Game/Player/PlayerInputAccessors"
+    },
+    {
+      "name": "sm3d::PlayerInput::getFrameFromLastJumpTrig",
+      "address": 36384676,
+      "size": 8,
+      "unit": "Game/Player/PlayerInputAccessors"
+    },
+    {
+      "name": "sm3d::PlayerInput::isJumpButtonOn",
+      "address": 36384684,
+      "size": 8,
+      "unit": "Game/Player/PlayerInputAccessors"
+    },
+    {
+      "name": "sm3d::PlayerInput::isDashTrigOn",
+      "address": 36384692,
+      "size": 8,
+      "unit": "Game/Player/PlayerInputAccessors"
+    },
+    {
+      "name": "sm3d::PlayerInput::isDashButtonOn",
+      "address": 36384700,
+      "size": 8,
+      "unit": "Game/Player/PlayerInputAccessors"
+    },
+    {
+      "name": "sm3d::PlayerInput::isDashButtonReleased",
+      "address": 36384708,
+      "size": 8,
+      "unit": "Game/Player/PlayerInputAccessors"
+    },
+    {
+      "name": "sm3d::PlayerInput::isSquatTrigOn",
+      "address": 36384716,
+      "size": 8,
+      "unit": "Game/Player/PlayerInputAccessors"
+    },
+    {
+      "name": "sm3d::PlayerInput::isSquatButtonOn",
+      "address": 36384724,
+      "size": 8,
+      "unit": "Game/Player/PlayerInputAccessors"
+    },
+    {
+      "name": "sm3d::PlayerInput::isHipDropTrigOn",
+      "address": 36384732,
+      "size": 8,
+      "unit": "Game/Player/PlayerInputAccessors"
+    },
+    {
+      "name": "sm3d::PlayerInput::isHipDropButtonOn",
+      "address": 36384740,
+      "size": 8,
+      "unit": "Game/Player/PlayerInputAccessors"
+    },
+    {
+      "name": "sm3d::PlayerInput::isFireBallTrigOn",
+      "address": 36384748,
+      "size": 8,
+      "unit": "Game/Player/PlayerInputAccessors"
+    },
+    {
+      "name": "sm3d::PlayerInput::isSwimPaddleTrigOn",
+      "address": 36384756,
+      "size": 8,
+      "unit": "Game/Player/PlayerInputAccessors"
+    },
+    {
+      "name": "sm3d::PlayerInput::isBubbleTrigOn",
+      "address": 36384764,
+      "size": 8,
+      "unit": "Game/Player/PlayerInputAccessors"
+    },
+    {
+      "name": "sm3d::PlayerInput::isClimbAttackTrigOn",
+      "address": 36384772,
+      "size": 8,
+      "unit": "Game/Player/PlayerInputAccessors"
+    },
+    {
+      "name": "sm3d::PlayerInput::isClimbAttackButtonOn",
+      "address": 36384780,
+      "size": 8,
+      "unit": "Game/Player/PlayerInputAccessors"
+    },
+    {
+      "name": "sm3d::PlayerInput::isHoldButtonOn",
+      "address": 36384788,
+      "size": 8,
+      "unit": "Game/Player/PlayerInputAccessors"
+    },
+    {
+      "name": "sm3d::PlayerInput::isReleaseTrigOn",
+      "address": 36384796,
+      "size": 8,
+      "unit": "Game/Player/PlayerInputAccessors"
     }
   ]
 }

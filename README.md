@@ -5,7 +5,7 @@
 A matching decompilation of **Super Mario 3D World (Wii U)**
 
 ## Status
-60 / 7,335,668 bytes matched (0.0008%)
+284 / 7,335,668 bytes matched (0.0039%)
 
 
 Progress reports are published via [ByteMatch](https://bytematch.dev/siahisaforker/SM3Dcomp) after project registration. See [ByteMatch integration](docs/BYTEMATCH.md).
