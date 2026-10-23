@@ -523,6 +523,76 @@ def linker_script(unit: Unit, undefined: dict[str, int]) -> str:
     return "\n".join(lines)
 
 
+def import_linker_script(unit: Unit, undefined: dict[str, int],
+                         sections: tuple[str, ...]) -> str:
+    lines = ["OUTPUT_FORMAT(\"elf32-powerpc\")",
+             "OUTPUT_ARCH(powerpc:common)"]
+    lines.extend(f"{name} = 0x{address:08x};" for name, address in sorted(undefined.items()))
+    lines.extend(["", "SECTIONS", "{",
+                  "  .syscall 0x02000000 : { *(.syscall .syscall.*) }"])
+
+    covered = set()
+    for section in sorted(unit.sections, key=lambda item: item.start):
+        lines.append(f"  {section.name} 0x{section.start:08x} : "
+                     f"{{ *({section.name}) *({section.name}.*) }}")
+        covered.add(section.name)
+    if ".text" not in covered:
+        lines.append("  .text 0x02000020 : { *(.text .text.*) }")
+    if ".rodata" not in covered:
+        lines.append("  .rodata 0x10000000 : { *(.rodata .rodata.*) }")
+    if ".data" not in covered:
+        lines.append("  .data : { *(.data .data.*) }")
+    if ".bss" not in covered:
+        lines.append("  .bss (NOLOAD) : { *(.bss .bss.*) *(COMMON) }")
+
+    lines.extend(["  . = 0xc0000000;",
+                  "  .wut_load_bounds : { LONG(0) }"])
+    for section in sections:
+        lines.extend([f"  {section} ALIGN(32) :",
+                      "  {",
+                      f"    KEEP(*({section}))",
+                      "  }"])
+    lines.extend(["}", ""])
+    return "\n".join(lines)
+
+
+def write_import_layout(elf: Path, output: Path, script_dir: Path,
+                        root: Path, version: str) -> None:
+    imported = read_imports(elf.read_bytes())
+    groups: dict[str, list[Import]] = {}
+    names: set[str] = set()
+    for item in imported:
+        if item.name in names:
+            raise ValueError(f"duplicate import {item.name}")
+        names.add(item.name)
+        groups.setdefault(item.section, []).append(item)
+
+    lines = []
+    for section, symbols in groups.items():
+        module = section.split("import_", 1)[1]
+        if not re.fullmatch(r"[A-Za-z0-9_.]+", module):
+            raise ValueError(f"invalid RPL name {module}")
+        lines.extend([f'.section {section},"{"ax" if section.startswith(".fimport_") else "a"}",@0x80000002',
+                      ".balign 16", ".long 1", ".long 0",
+                      f'.asciz "{module}"', ".balign 8"])
+        for item in sorted(symbols, key=lambda value: (value.address, value.name)):
+            if not re.fullmatch(r"[A-Za-z_.$][A-Za-z0-9_.$]*", item.name):
+                raise ValueError(f"unsupported import symbol {item.name}")
+            lines.extend([f".globl {item.name}",
+                          f'.type {item.name},@{"function" if item.kind == "function" else "object"}',
+                          f"{item.name}:", ".space 8"])
+    write_if_changed(output, "\n".join(lines) + "\n")
+
+    project = load_project(root, version)
+    undefined = load_undefined_maps(root, project.undefined_maps)
+    imported_sections = tuple(groups)
+    for unit in load_units(root, project, load_symbols(root / project.symbols)):
+        script = script_dir / f"{unit.name}.ld"
+        write_if_changed(script, import_linker_script(unit, undefined, imported_sections))
+    print(f"generated Wii U linker imports: {len(imported)} symbols, "
+          f"{len(groups)} RPL sections")
+
+
 def relative_to_root(root: Path, path: Path) -> str:
     return slash(path.resolve().relative_to(root))
 
@@ -564,6 +634,8 @@ def configure(args: argparse.Namespace) -> None:
     objcopy_config = str(args.binutils / objcopy_name) if args.binutils else project.objcopy
     linker = resolve_tool(root, linker_config, "linker")
     objcopy = resolve_tool(root, objcopy_config, "objcopy")
+    assembler_config = str(args.binutils / "powerpc-eabi-as") if args.binutils else "powerpc-eabi-as"
+    assembler = resolve_tool(root, assembler_config, "assembler")
     if args.wiiurpxtool:
         wiiurpxtool = resolve_tool(root, str(args.wiiurpxtool), "wiiurpxtool")
         build_wiiurpx = False
@@ -589,6 +661,10 @@ def configure(args: argparse.Namespace) -> None:
         *files_under(root / "tools" / "wiiurpxtool-compat"),
     ]
     decompressed_rpx = build_root / "orig" / "RedCarpet.elf"
+    import_root = build_root / "imports"
+    import_assembly = import_root / "RedCarpet.s"
+    import_object = import_root / "RedCarpet.o"
+    import_scripts = [import_root / "ld" / f"{unit.name}.ld" for unit in units]
     config_inputs = [Path("configure.py"), *(
         path.relative_to(root) for path in files_under(root / "config" / args.version)
     )]
@@ -629,6 +705,7 @@ def configure(args: argparse.Namespace) -> None:
         f"includes = {shell_args(include_flags)}",
         f"linker = {quote(linker)}",
         f"linker_flags = {shell_args(project.linker_flags)}",
+        f"assembler = {quote(assembler)}",
         f"objcopy = {quote(objcopy)}",
         f"objcopy_extract_flags = {shell_args(project.objcopy_extract_flags)}",
         f"wiiurpxtool = {quote(wiiurpxtool)}",
@@ -660,6 +737,19 @@ def configure(args: argparse.Namespace) -> None:
         "rule compile",
         "  command = $compiler -c $compiler_flags $includes -o $out $in",
         "  description = compile $in",
+        "",
+        "rule import_layout",
+        "  command = $python configure.py import-layout --version $version "
+        "--input $in --output $assembly --script-dir $script_dir",
+        "  description = generate RPX import linkage",
+        "",
+        "rule assemble_imports",
+        "  command = $assembler -o $out $in",
+        "  description = assemble RPX imports",
+        "",
+        "rule link_with_imports",
+        "  command = $linker $linker_flags --emit-relocs -T $script -o $out $in",
+        "  description = link imports $name",
         "",
         "rule link_unit",
         "  command = $linker $linker_flags -T $script -o $out $in",
@@ -715,6 +805,17 @@ def configure(args: argparse.Namespace) -> None:
         "build " + build_input(root, decompressed_rpx) + ": decompress_rpx " +
         build_input(root, original) + " | " + build_input(root, wiiurpxtool)
     )
+    lines.extend([
+        "build " + " ".join(build_input(root, path)
+                           for path in [import_assembly, *import_scripts]) +
+        ": import_layout " + build_input(root, decompressed_rpx) +
+        " | " + build_input(root, root / "configure.py"),
+        f"  version = {args.version}",
+        "  assembly = " + quote(import_assembly),
+        "  script_dir = " + quote(import_root / "ld"),
+        "build " + build_input(root, import_object) + ": assemble_imports " +
+        build_input(root, import_assembly) + " | " + build_input(root, assembler),
+    ])
     object_paths = [paths["object"] for _, paths in paths_by_unit]
     compiler_inputs = [compiler, *([wrapper] if wrapper else [])]
     for unit, paths in paths_by_unit:
@@ -724,6 +825,18 @@ def configure(args: argparse.Namespace) -> None:
             " ".join(build_input(root, path) for path in header_files + compiler_inputs)
         )
 
+    import_linked: list[Path] = []
+    for unit, paths in paths_by_unit:
+        output = build_root / "linked_imports" / f"{unit.name}.elf"
+        script = import_root / "ld" / f"{unit.name}.ld"
+        import_linked.append(output)
+        lines.extend([
+            "build " + build_input(root, output) + ": link_with_imports " +
+            build_input(root, paths["object"]) + " " + build_input(root, import_object) +
+            " | " + build_input(root, script) + " " + build_input(root, linker),
+            "  script = " + quote(script),
+            f"  name = {unit.name}",
+        ])
     verify_stamps: list[Path] = []
     base_objects: list[Path] = []
     for unit, paths in paths_by_unit:
@@ -794,6 +907,8 @@ def configure(args: argparse.Namespace) -> None:
                  " ".join(build_input(root, path) for path in tools))
     lines.append("build all_source: phony " +
                  " ".join(build_input(root, path) for path in object_paths + base_objects))
+    lines.append("build import-link: phony " +
+                 " ".join(build_input(root, path) for path in import_linked))
     lines.append("build verify: phony " +
                  " ".join(build_input(root, path) for path in verify_stamps))
     lines.append("build progress: phony " + build_input(root, report_json))
@@ -1556,7 +1671,7 @@ def main() -> None:
         description="Configure and report progress for the SM3DW matching decompilation."
     )
     parser.add_argument("mode",
-                        choices=("configure", "validate", "progress", "verify", "extract", "make-base", "imports", "compiler", "ghidra", "download-tool"),
+                        choices=("configure", "validate", "progress", "verify", "extract", "make-base", "imports", "import-layout", "compiler", "ghidra", "download-tool"),
                         nargs="?", default="configure")
     parser.add_argument("-v", "--version", choices=VERSIONS, type=str.upper,
                         default=DEFAULT_VERSION, help="game version to build (default: US)")
@@ -1590,6 +1705,7 @@ def main() -> None:
     parser.add_argument("--address", type=lambda value: int(value, 0))
     parser.add_argument("--size", type=lambda value: int(value, 0))
     parser.add_argument("--section", action="append")
+    parser.add_argument("--script-dir", type=Path)
     parser.add_argument("--check", action="store_true")
     parser.add_argument("--elf", type=Path)
     parser.add_argument("--prefix", type=Path, default=PROJECT_ROOT / ".local")
@@ -1609,6 +1725,14 @@ def main() -> None:
                                  args.check)
         except (ValueError, OSError) as error:
             parser.exit(1, f"import extraction: {error}\n")
+    elif args.mode == "import-layout":
+        if args.input is None or args.output is None or args.script_dir is None:
+            parser.error("import-layout requires --input, --output, and --script-dir")
+        try:
+            write_import_layout(args.input, args.output, args.script_dir,
+                                PROJECT_ROOT, args.version)
+        except (ValueError, OSError) as error:
+            parser.exit(1, f"import linker: {error}\n")
     elif args.mode == "compiler":
         setup_compiler(args.destination or PROJECT_ROOT / ".local" / "toolchains" / "ghs5.3.22")
     elif args.mode == "ghidra":
