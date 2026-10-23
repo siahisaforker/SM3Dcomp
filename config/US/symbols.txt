@@ -26,3 +26,4 @@ sm3d::PlayerInput::isClimbAttackTrigOn = .text:0x022b3004; // size:0x8
 sm3d::PlayerInput::isClimbAttackButtonOn = .text:0x022b300c; // size:0x8
 sm3d::PlayerInput::isHoldButtonOn = .text:0x022b3014; // size:0x8
 sm3d::PlayerInput::isReleaseTrigOn = .text:0x022b301c; // size:0x8
+sm3d::PlayerMovementCounter::bindDependencies = .text:0x022b3080; // size:0x18

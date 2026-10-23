@@ -8,3 +8,6 @@ Game/Player/PlayerInputFrame.cpp:
 
 Game/Player/PlayerInputAccessors.cpp:
     .text start:0x022b2f64 end:0x022b3024
+
+Game/Player/PlayerMovementCounter.cpp:
+    .text start:0x022b3080 end:0x022b3098

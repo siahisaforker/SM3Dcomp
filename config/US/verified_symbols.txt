@@ -45,3 +45,4 @@ PlayerInput_isClimbAttackTrigOn = .text:0x022b3004; // size:0x8
 PlayerInput_isClimbAttackButtonOn = .text:0x022b300c; // size:0x8
 PlayerInput_isHoldButtonOn = .text:0x022b3014; // size:0x8
 PlayerInput_isReleaseTrigOn = .text:0x022b301c; // size:0x8
+PlayerMovementCounter_bindDependencies = .text:0x022b3080; // size:0x18
