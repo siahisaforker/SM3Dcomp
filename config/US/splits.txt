@@ -11,3 +11,6 @@ Game/Player/PlayerInputAccessors.cpp:
 
 Game/Player/PlayerMovementCounter.cpp:
     .text start:0x022b3080 end:0x022b3098
+
+Game/Stage/StageArchive.cpp:
+    .text start:0x02446564 end:0x0244657c
