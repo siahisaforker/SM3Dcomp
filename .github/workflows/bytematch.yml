@@ -1,0 +1,33 @@
+name: ByteMatch progress
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  progress:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python3 -m pip install -r requirements.txt
+      - name: Validate manifests and progress
+        run: |
+          python3 tools/validate_splits.py
+          python3 -m unittest discover -s tests -q
+          python3 tools/bytematch_report.py generate
+          python3 tools/bytematch_report.py check
+      - name: Publish ByteMatch report
+        uses: actions/upload-artifact@v4
+        with:
+          name: US_report
+          path: build/US/bytematch/report.json
+          if-no-files-found: error

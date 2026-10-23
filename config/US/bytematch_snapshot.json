@@ -1,0 +1,43 @@
+{
+  "format": 1,
+  "game_version": "US",
+  "rpx_sha256": "813d906365860eb6ef4644e8380983db382cbaefd951f9a89bd3d2c84eb4aaad",
+  "total_code": 7335668,
+  "estimated_total_functions": 30941,
+  "inputs": {
+    "CMakeLists.txt": "732561aa8aabf108a91e1fcb2d79f882bd6882648be704bd4c8bb29566649495",
+    "config/US/build.sha256": "a00e9542ffe18983b2bd2291c51291b9953dd5c219045457113fce0c5d5ae363",
+    "config/US/config.yml": "2d581b5cef1c08d530b7fc1178c58bde94969500a0389c8f8c216654802ca5c6",
+    "config/US/imports/gx2.txt": "4329cbdb93cba1b56bf621e0884f30dacc96af2a9c1d8459b7419da708fd5aa7",
+    "config/US/splits.txt": "ee0dd049753fc007292c9a8a791e8af88320f0e2cb0560a7102fe715af1e6c5e",
+    "config/US/symbols.txt": "c085305211445ce38a3dc586daaa50c56529d79ea771a55d888ca51082377e6b",
+    "config/US/undefined_funcs.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "config/US/undefined_syms.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "config/US/verified_symbols.txt": "3e22f8232892c4448b980527746555b3fe870c96cb203f416c1c0864d611a267",
+    "configure.py": "12f2ec4ea79f80b35614fb4325250261b94297bb0053bf822d17625797df17e1",
+    "include/Game/Player/PlayerInput.h": "4ff6d4e14fd76d63dbde1503c543763ea16038f5e943db2b1adec64022e01e1f",
+    "include/types.h": "0fd77ca083d726f9f27cdf8179a799b7ff16e1c54b6dcb025d2c78bc15450359",
+    "src/Game/Player/PlayerInput.cpp": "61d4ddfd07402e0509e0f799bc4260cb53ea02ff91aeac7967a4fb1de0b42e6f",
+    "tools/validate_splits.py": "bf45e3af8d98fa530619446cab08cd4667c6706f71d0ee73551ca69554ff63fb"
+  },
+  "matched_functions": [
+    {
+      "name": "sm3d::PlayerInput::isJumpTrigOn",
+      "address": 36384552,
+      "size": 20,
+      "unit": "Game/Player/PlayerInput"
+    },
+    {
+      "name": "sm3d::PlayerInput::isPrecedingSwimPaddleTrigOn",
+      "address": 36384572,
+      "size": 20,
+      "unit": "Game/Player/PlayerInput"
+    },
+    {
+      "name": "sm3d::PlayerInput::isRollingTrigOn",
+      "address": 36384592,
+      "size": 20,
+      "unit": "Game/Player/PlayerInput"
+    }
+  ]
+}

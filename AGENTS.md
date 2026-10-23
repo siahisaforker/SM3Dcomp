@@ -43,3 +43,7 @@ ninja -j2 progress
 Use `--non-matching` **only during iteration**. The strict verification is the acceptance criterion. If strict verification fails, state the function as non-matching, report concrete byte/size/instruction differences, and keep progress honest. Prefer objdiff or PowerPC objdump over changing source blindly.
 
 Update research/provenance as you work, but do not inflate verified or matched counts. Preserve Ghidra projects, compiler binaries, original game data, and temporary builds under ignored `.local/` or `build/`. Check `docs/MATCHING.md` before changing split or linker logic.
+
+## Publishing progress
+
+Do not infer matching from source existence or Ghidra output. After strict native build verification, run `python3 tools/bytematch_report.py update`. CI uses the committed snapshot and fails on stale matching inputs. See `docs/BYTEMATCH.md`. Do not upload the RPX, compiler, local build artifacts, or cached matching binaries.
