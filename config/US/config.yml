@@ -8,7 +8,28 @@ splits: config/US/splits.txt
 undefined_funcs: config/US/undefined_funcs.txt
 undefined_syms: config/US/undefined_syms.txt
 import_maps:
+  - config/US/imports/coreinit.txt
+  - config/US/imports/coreinit_data.txt
   - config/US/imports/gx2.txt
+  - config/US/imports/mic.txt
+  - config/US/imports/nlibcurl.txt
+  - config/US/imports/nn_ac.txt
+  - config/US/imports/nn_acp.txt
+  - config/US/imports/nn_act.txt
+  - config/US/imports/nn_boss.txt
+  - config/US/imports/nn_fp.txt
+  - config/US/imports/nn_ndm.txt
+  - config/US/imports/nn_olv.txt
+  - config/US/imports/nn_save.txt
+  - config/US/imports/nsysnet.txt
+  - config/US/imports/padscore.txt
+  - config/US/imports/proc_ui.txt
+  - config/US/imports/snd_core.txt
+  - config/US/imports/snd_user.txt
+  - config/US/imports/sysapp.txt
+  - config/US/imports/vpad.txt
+  - config/US/imports/vpadbase.txt
+  - config/US/imports/zlib125.txt
 source_dir: src
 compiler: .local/toolchains/ghs5.3.22/bin/cxppc.exe
 compiler_flags:

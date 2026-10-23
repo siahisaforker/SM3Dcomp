@@ -1,0 +1,19 @@
+// RedCarpet.rpx .fimport_snd_user symbols.
+// Generated from the original RPX symbol table. Do not edit manually.
+
+AXFXChorusExpCallback = 0xc0009c20;
+AXFXChorusExpGetMemSize = 0xc0009c30;
+AXFXChorusExpInit = 0xc0009c40;
+AXFXChorusExpSettingsUpdate = 0xc0009c60;
+AXFXChorusExpShutdown = 0xc0009c70;
+AXFXGetHooks = 0xc0009d70;
+AXFXSetHooks = 0xc0009f80;
+MIXAssignChannel = 0xc000a0a8;
+MIXInit = 0xc000a1e8;
+MIXInitDeviceControl = 0xc000a1f8;
+MIXInitInputControl = 0xc000a200;
+MIXReleaseChannel = 0xc000a228;
+MIXSetDeviceAux = 0xc000a2b0;
+MIXSetInput = 0xc000a2e8;
+MIXSetSoundMode = 0xc000a300;
+MIXUpdateSettings = 0xc000a310;

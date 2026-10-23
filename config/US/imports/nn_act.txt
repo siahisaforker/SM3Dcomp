@@ -1,0 +1,18 @@
+// RedCarpet.rpx .fimport_nn_act symbols.
+// Generated from the original RPX symbol table. Do not edit manually.
+
+AcquireNexServiceToken__Q2_2nn3actFP26ACTNexAuthenticationResultUi = 0xc0006f28;
+Finalize__Q2_2nn3actFv = 0xc0006fe8;
+GetAccountId__Q2_2nn3actFPc = 0xc0007000;
+GetErrorCode__Q2_2nn3actFRCQ2_2nn6Result = 0xc0007078;
+GetMiiName__Q2_2nn3actFPw = 0xc00070e0;
+GetMii__Q2_2nn3actFP12FFLStoreData = 0xc00070e8;
+GetParentalControlSlotNoEx__Q2_2nn3actFPUcUc = 0xc0007118;
+GetPersistentIdEx__Q2_2nn3actFUc = 0xc0007128;
+GetPrincipalId__Q2_2nn3actFv = 0xc0007140;
+GetSlotNo__Q2_2nn3actFv = 0xc0007160;
+GetTransferableIdEx__Q2_2nn3actFPULUiUc = 0xc0007198;
+GetTransferableId__Q2_2nn3actFUi = 0xc00071a0;
+HasNfsAccount__Q2_2nn3actFv = 0xc00071c8;
+Initialize__Q2_2nn3actFv = 0xc00071e8;
+IsNetworkAccount__Q2_2nn3actFv = 0xc0007250;

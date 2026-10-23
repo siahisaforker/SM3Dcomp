@@ -1,0 +1,11 @@
+// RedCarpet.rpx .dimport_coreinit symbols.
+// Generated from the original RPX symbol table. Do not edit manually.
+
+MEMAllocFromDefaultHeap = 0xc000d7c8;
+MEMAllocFromDefaultHeapEx = 0xc000d7d0;
+MEMFreeToDefaultHeap = 0xc000d7d8;
+__atexit_cleanup = 0xc000d800;
+__cpp_exception_cleanup_ptr = 0xc000d808;
+__cpp_exception_init_ptr = 0xc000d810;
+__gh_FOPEN_MAX = 0xc000d818;
+_iob = 0xc000d830;

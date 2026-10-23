@@ -1,0 +1,8 @@
+// RedCarpet.rpx .fimport_zlib125 symbols.
+// Generated from the original RPX symbol table. Do not edit manually.
+
+compress = 0xc0006390;
+inflate = 0xc0006410;
+inflateEnd = 0xc0006438;
+inflateInit2_ = 0xc0006448;
+uncompress = 0xc0006488;

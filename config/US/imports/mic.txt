@@ -1,0 +1,11 @@
+// RedCarpet.rpx .fimport_mic symbols.
+// Generated from the original RPX symbol table. Do not edit manually.
+
+MICClose = 0xc0005848;
+MICGetState = 0xc0005850;
+MICGetStatus = 0xc0005858;
+MICInit = 0xc0005860;
+MICOpen = 0xc0005868;
+MICSetDataConsumed = 0xc0005870;
+MICSetState = 0xc0005878;
+MICUninit = 0xc0005880;

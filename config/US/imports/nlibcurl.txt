@@ -1,0 +1,19 @@
+// RedCarpet.rpx .fimport_nlibcurl symbols.
+// Generated from the original RPX symbol table. Do not edit manually.
+
+curl_easy_cleanup = 0xc0007e88;
+curl_easy_init = 0xc0007ea8;
+curl_easy_pause = 0xc0007eb0;
+curl_easy_setopt = 0xc0007ed8;
+curl_formfree = 0xc0007f00;
+curl_global_init_mem = 0xc0007f30;
+curl_multi_add_handle = 0xc0007f60;
+curl_multi_cleanup = 0xc0007f70;
+curl_multi_fdset = 0xc0007f78;
+curl_multi_info_read = 0xc0007f80;
+curl_multi_init = 0xc0007f88;
+curl_multi_perform = 0xc0007f90;
+curl_multi_remove_handle = 0xc0007f98;
+curl_multi_timeout = 0xc0007fc8;
+curl_slist_append = 0xc0008018;
+curl_slist_free_all = 0xc0008020;

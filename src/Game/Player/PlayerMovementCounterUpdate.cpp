@@ -18,12 +18,6 @@ extern "C"
 
 void PlayerMovementCounter::update()
 {
-    // required for matching, cannot figure out the regswap
-#if defined(INLINE_HACKS)
-
-#include "PlayerMovementCounterUpdateInline.inc"
-
-#else // tried to make this as semantically similar as possible, should be functionally equivalent
     PlayerMovementCollision* currentCollision = collision;
     if (!currentCollision->isAllowed())
     {
@@ -71,7 +65,6 @@ void PlayerMovementCounter::update()
         }
     }
     frameCount = 0;
-#endif
 }
 
 } // namespace sm3d

@@ -1,0 +1,10 @@
+// RedCarpet.rpx .fimport_proc_ui symbols.
+// Generated from the original RPX symbol table. Do not edit manually.
+
+ProcUIClearCallbacks = 0xc000ae08;
+ProcUIDrawDoneRelease = 0xc000ae10;
+ProcUIInit = 0xc000ae28;
+ProcUIInitEx = 0xc000ae30;
+ProcUIProcessMessages = 0xc000ae40;
+ProcUIRegisterCallback = 0xc000ae50;
+ProcUIShutdown = 0xc000ae78;

@@ -132,7 +132,7 @@ def opcode_tokens(code):
 
 
 def measure_fuzzy(project):
-    """Compare the ordinary GHS C++ object to original PPC, never INLINE_HACKS."""
+    """Compare GHS-compiled C++ opcodes with the original PowerPC function."""
     results = []
     output = ROOT / "build" / VERSION / "fuzzy"
     output.mkdir(parents=True, exist_ok=True)

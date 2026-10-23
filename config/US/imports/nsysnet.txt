@@ -1,0 +1,27 @@
+// RedCarpet.rpx .fimport_nsysnet symbols.
+// Generated from the original RPX symbol table. Do not edit manually.
+
+NSSLAddServerPKIGroups = 0xc0008058;
+NSSLCreateContext = 0xc0008068;
+NSSLDestroyContext = 0xc0008078;
+NSSLInit = 0xc00080d8;
+bind = 0xc0008280;
+gethostbyname = 0xc00082c8;
+getsockname = 0xc00082e8;
+htonl = 0xc00082f8;
+htons = 0xc0008300;
+inet_ntoa = 0xc0008310;
+inet_pton = 0xc0008328;
+ntohl = 0xc00084a8;
+ntohs = 0xc00084b0;
+recv = 0xc00084b8;
+recvfrom = 0xc00084c0;
+select = 0xc00084c8;
+send = 0xc00084d0;
+sendto = 0xc00084d8;
+setsockopt = 0xc00084f8;
+shutdown = 0xc0008500;
+socket = 0xc0008518;
+socket_lib_init = 0xc0008528;
+socketclose = 0xc0008530;
+socketlasterr = 0xc0008540;

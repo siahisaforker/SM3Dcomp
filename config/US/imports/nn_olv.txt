@@ -1,0 +1,43 @@
+// RedCarpet.rpx .fimport_nn_olv.rpl symbols.
+// Generated from the original RPX symbol table. Do not edit manually.
+
+AddStampData__Q3_2nn3olv28UploadPostDataByPostAppParamFPCUcUi = 0xc00058c8;
+DownloadPostDataList__Q2_2nn3olvFPQ3_2nn3olv19DownloadedTopicDataPQ3_2nn3olv18DownloadedPostDataPUiUiPCQ3_2nn3olv25DownloadPostDataListParam = 0xc0005938;
+Finalize__Q2_2nn3olvFv = 0xc0005958;
+GetAppDataSize__Q3_2nn3olv18DownloadedDataBaseCFv = 0xc0005968;
+GetAppData__Q3_2nn3olv18DownloadedDataBaseCFPUcPUiUi = 0xc00059a8;
+GetBodyMemo__Q3_2nn3olv18DownloadedDataBaseCFPUcPUiUi = 0xc00059e8;
+GetBodyText__Q3_2nn3olv18DownloadedDataBaseCFPwUi = 0xc0005a10;
+GetErrorCode__Q2_2nn3olvFRCQ2_2nn6Result = 0xc0005b48;
+GetFeeling__Q3_2nn3olv18DownloadedDataBaseCFv = 0xc0005b90;
+GetMiiData__Q3_2nn3olv18DownloadedDataBaseCFP12FFLStoreData = 0xc0005bd8;
+GetMiiNickname__Q3_2nn3olv18DownloadedDataBaseCFv = 0xc0005bf0;
+GetPostId__Q3_2nn3olv18DownloadedPostDataCFv = 0xc0005c80;
+GetResultByPostApp__Q2_2nn3olvFv = 0xc0005ce8;
+GetTopicTag__Q3_2nn3olv18DownloadedDataBaseCFv = 0xc0005da8;
+GetUserPid__Q3_2nn3olv18DownloadedDataBaseCFv = 0xc0005de0;
+Initialize__Q2_2nn3olvFPCQ3_2nn3olv15InitializeParam = 0xc0005e10;
+IsInitialized__Q2_2nn3olvFv = 0xc0005e20;
+SetAppData__Q3_2nn3olv15UploadParamBaseFPCUcUi = 0xc0005e40;
+SetFlags__Q3_2nn3olv25DownloadPostDataListParamFUi = 0xc0005f48;
+SetFlags__Q3_2nn3olv28UploadPostDataByPostAppParamFUi = 0xc0005f68;
+SetPostDataMaxNum__Q3_2nn3olv25DownloadPostDataListParamFUi = 0xc0005fb8;
+SetPostId__Q3_2nn3olv19StartPortalAppParamFPCc = 0xc0005fe8;
+SetPostId__Q3_2nn3olv28UploadEmpathyToPostDataParamFPCc = 0xc0006010;
+SetSearchKey__Q3_2nn3olv19UploadPostDataParamFPCwUc = 0xc0006038;
+SetSearchKey__Q3_2nn3olv25DownloadPostDataListParamFPCw = 0xc0006040;
+SetTopicTag__Q3_2nn3olv19UploadPostDataParamFPCw = 0xc00060b8;
+SetWork__Q3_2nn3olv15InitializeParamFPUcUi = 0xc00060f0;
+SetWork__Q3_2nn3olv28UploadPostDataByPostAppParamFPUcUi = 0xc00060f8;
+StartPortalApp__Q2_2nn3olvFPCQ3_2nn3olv19StartPortalAppParam = 0xc0006100;
+TestFlags__Q3_2nn3olv18DownloadedDataBaseCFUi = 0xc0006120;
+UploadEmpathyToPostData__Q2_2nn3olvFPCQ3_2nn3olv28UploadEmpathyToPostDataParam = 0xc00061a0;
+UploadPostDataByPostApp__Q2_2nn3olvFPCQ3_2nn3olv28UploadPostDataByPostAppParam = 0xc00061c0;
+__ct__Q3_2nn3olv15InitializeParamFv = 0xc00061d8;
+__ct__Q3_2nn3olv18DownloadedPostDataFv = 0xc00061f8;
+__ct__Q3_2nn3olv19DownloadedTopicDataFv = 0xc0006208;
+__ct__Q3_2nn3olv19StartPortalAppParamFv = 0xc0006210;
+__ct__Q3_2nn3olv25DownloadPostDataListParamFv = 0xc0006258;
+__ct__Q3_2nn3olv28UploadEmpathyToPostDataParamFv = 0xc0006290;
+__ct__Q3_2nn3olv28UploadPostDataByPostAppParamFv = 0xc0006298;
+__dt__Q3_2nn3olv28UploadPostDataByPostAppParamFv = 0xc0006348;

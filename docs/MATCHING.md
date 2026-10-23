@@ -34,12 +34,27 @@ The original `RedCarpet.rpx` SHA-256 is:
 
 Do not assume Wii U functions exist simply because Bowser's Fury/Switch has one. In particular, Fury's aerial dive may need new game logic rather than mapping an existing Wii U action. Keep `SM3DW-modding` and the installed Fury physics plugin independent of this decomp.
 
+## Wii U imports
+
+After configuring an original RPX, run `python3 tools/extract_imports.py` to extract the
+`.fimport_*` and `.dimport_*` symbol-table entries from `build/US/orig/RedCarpet.elf`.
+This produces per-library maps under `config/US/imports/`. Use
+`python3 tools/extract_imports.py --check` to verify the maps against the local ELF.
+These are linker metadata, not function implementations; import addresses in the
+`0xC0000000` region must not be treated as ordinary PowerPC branch destinations.
+The matching linker still needs relocation-aware verification of imported calls.
+
+For system API signatures, use WUT as the reference. `include/sdk/coreinit.h` includes the
+installed WUT Coreinit headers with GCC and exposes only the corresponding GHS-compatible
+Coreinit declarations with Nintendo's compiler. Do not link `libwut.a` into the original
+GHS matching code; the import symbols and relocations come from the RPX.
+
 ## Fuzzy candidates
 
 A fuzzy candidate is normal C++ source whose GHS output is not byte-exact. Declare it in
 `config/US/fuzzy_functions.json`, **not** in the strict `splits.txt` or `symbols.txt`.
-Running `python3 tools/bytematch_report.py update` locally compiles the ordinary C++ branch
-(without `INLINE_HACKS`) and compares PowerPC opcode sequences to the original RPX using an
+Running `python3 tools/bytematch_report.py update` locally compiles the C++ function and
+compares PowerPC opcode sequences to the original RPX using an
 order-preserving sequence alignment that ignores register selection and operands. The
 `ppc_opcode_sequence_v1` score is an approximation, not objdiff's instruction/operand-aware
 similarity algorithm or evidence of functional correctness. The input hashes, measured score,

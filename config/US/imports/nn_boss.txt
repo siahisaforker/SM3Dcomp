@@ -1,0 +1,18 @@
+// RedCarpet.rpx .fimport_nn_boss symbols.
+// Generated from the original RPX symbol table. Do not edit manually.
+
+ErrorCode__Q3_2nn4boss10TaskResultCFv = 0xc00075f0;
+Initialize__Q2_2nn4bossFv = 0xc0007838;
+Initialize__Q3_2nn4boss17PlayReportSettingFPvUi = 0xc0007880;
+Initialize__Q3_2nn4boss4TaskFPCcUi = 0xc0007898;
+IsInitialized__Q2_2nn4bossFv = 0xc00078c0;
+IsRegistered__Q3_2nn4boss4TaskCFv = 0xc00078c8;
+Register__Q3_2nn4boss4TaskFRQ3_2nn4boss11TaskSetting = 0xc0007958;
+Set__Q3_2nn4boss17PlayReportSettingFUiT1 = 0xc0007b10;
+StartScheduling__Q3_2nn4boss4TaskFb = 0xc0007b18;
+Unregister__Q3_2nn4boss4TaskFv = 0xc0007b40;
+__ct__Q3_2nn4boss10TaskResultFQ2_2nn6Result = 0xc0007ba8;
+__ct__Q3_2nn4boss17PlayReportSettingFv = 0xc0007c30;
+__ct__Q3_2nn4boss4TaskFv = 0xc0007c58;
+__dt__Q3_2nn4boss17PlayReportSettingFv = 0xc0007d38;
+__dt__Q3_2nn4boss4TaskFv = 0xc0007d58;

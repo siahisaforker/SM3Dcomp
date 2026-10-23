@@ -1,0 +1,4 @@
+// RedCarpet.rpx .fimport_vpadbase symbols.
+// Generated from the original RPX symbol table. Do not edit manually.
+
+VPADBASEGetHeadphoneStatus = 0xc000ad40;

@@ -1,0 +1,5 @@
+// RedCarpet.rpx .fimport_nn_ndm symbols.
+// Generated from the original RPX symbol table. Do not edit manually.
+
+Finalize__Q2_2nn3ndmFv = 0xc0007428;
+ResumeDaemons__Q2_2nn3ndmFUi = 0xc00074a8;

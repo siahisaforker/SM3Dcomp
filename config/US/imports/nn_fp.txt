@@ -1,0 +1,10 @@
+// RedCarpet.rpx .fimport_nn_fp symbols.
+// Generated from the original RPX symbol table. Do not edit manually.
+
+GetFriendList__Q2_2nn2fpFPUiT1UiT3 = 0xc00065c0;
+GetMyPrincipalId__Q2_2nn2fpFv = 0xc0006658;
+Initialize__Q2_2nn2fpFv = 0xc0006690;
+IsInitialized__Q2_2nn2fpFv = 0xc00066a8;
+LoginAsync__Q2_2nn2fpFPFQ2_2nn6ResultPv_vPv = 0xc00066f0;
+RegisterAccountAsync__Q2_2nn2fpFPFQ2_2nn6ResultPv_vPv = 0xc0006708;
+ResultToErrorCode__Q2_2nn2fpFQ2_2nn6Result = 0xc0006720;

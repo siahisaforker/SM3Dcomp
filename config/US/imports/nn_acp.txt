@@ -1,0 +1,5 @@
+// RedCarpet.rpx .fimport_nn_acp symbols.
+// Generated from the original RPX symbol table. Do not edit manually.
+
+ACPMiiUnwrap = 0xc000a700;
+ACPMiiWrap = 0xc000a708;

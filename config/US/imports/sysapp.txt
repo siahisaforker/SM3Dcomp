@@ -1,0 +1,5 @@
+// RedCarpet.rpx .fimport_sysapp symbols.
+// Generated from the original RPX symbol table. Do not edit manually.
+
+SYSLaunchSettings = 0xc000d900;
+_SYSGetSystemApplicationTitleId = 0xc000d9f0;

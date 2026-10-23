@@ -1,0 +1,20 @@
+// RedCarpet.rpx .fimport_padscore symbols.
+// Generated from the original RPX symbol table. Do not edit manually.
+
+KPADDisableDPD = 0xc000aed8;
+KPADEnableDPD = 0xc000af18;
+KPADGetMplsWorkSize = 0xc000afb0;
+KPADInitEx = 0xc000b000;
+KPADReadEx = 0xc000b068;
+KPADSetMplsWorkarea = 0xc000b140;
+WENCGetEncodeData = 0xc000b208;
+WPADCanSendStreamData = 0xc000b218;
+WPADControlMotor = 0xc000b268;
+WPADControlSpeaker = 0xc000b270;
+WPADDisconnect = 0xc000b290;
+WPADEnableURCC = 0xc000b2a8;
+WPADGetSpeakerVolume = 0xc000b380;
+WPADInit = 0xc000b3c8;
+WPADProbe = 0xc000b428;
+WPADRegisterAllocator = 0xc000b458;
+WPADSendStreamData = 0xc000b490;

@@ -1,0 +1,8 @@
+// RedCarpet.rpx .fimport_vpad symbols.
+// Generated from the original RPX symbol table. Do not edit manually.
+
+VPADControlMotor = 0xc000aa90;
+VPADGetTPCalibratedPoint = 0xc000ab70;
+VPADInit = 0xc000ab90;
+VPADRead = 0xc000abe0;
+VPADStopMotor = 0xc000acd0;

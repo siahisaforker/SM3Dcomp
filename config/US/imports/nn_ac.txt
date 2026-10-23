@@ -1,0 +1,8 @@
+// RedCarpet.rpx .fimport_nn_ac symbols.
+// Generated from the original RPX symbol table. Do not edit manually.
+
+Connect__Q2_2nn2acFv = 0xc0006b60;
+GetAssignedAddress__Q2_2nn2acFPUl = 0xc0006b98;
+GetAssignedSubnet__Q2_2nn2acFPUl = 0xc0006bb8;
+GetLastErrorCode__Q2_2nn2acFPUi = 0xc0006c30;
+Initialize__Q2_2nn2acFv = 0xc0006d08;

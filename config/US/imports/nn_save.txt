@@ -1,0 +1,16 @@
+// RedCarpet.rpx .fimport_nn_save symbols.
+// Generated from the original RPX symbol table. Do not edit manually.
+
+SAVEFlushQuota = 0xc000a8f8;
+SAVEGetFreeSpaceSize = 0xc000a908;
+SAVEGetSharedDataTitlePath = 0xc000a920;
+SAVEGetSharedSaveDataPath = 0xc000a928;
+SAVEGetStat = 0xc000a930;
+SAVEGetStatOtherApplication = 0xc000a940;
+SAVEInit = 0xc000a970;
+SAVEInitSaveDir = 0xc000a978;
+SAVEOpenDir = 0xc000a990;
+SAVEOpenFile = 0xc000a9d0;
+SAVEOpenFileOtherApplication = 0xc000a9e0;
+SAVERemove = 0xc000aa10;
+SAVEShutdown = 0xc000aa40;

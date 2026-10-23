@@ -30,8 +30,7 @@ code generation and matching boundaries. Combine adjacent functions in one sourc
 verifying that their original ranges and the compiled output permit it.
 
 Use the repository's `.clang-format` for C++ and close each namespace with a comment such as
-`} // namespace sm3d`. Keep version-specific PowerPC overrides
-separate from the readable C++ body and gated behind `INLINE_HACKS`.
+`} // namespace sm3d`. Keep reconstructed gameplay logic in ordinary C++.
 
 ## Partial layouts
 
@@ -48,10 +47,7 @@ reference but are not yet verified Wii U base classes. Its remaining identified 
 field unnamed rather than inventing a gameplay purpose. Reconstruct inheritance before replacing
 these transitional vtable members with base-class declarations.
 
-`INLINE_HACKS` provides the optional US executable assembly-exact version of the movement update.
-This is separate from source-to-compiler matching and must not inflate the normal match count.
-
 Matching and source organization are distinct: a function-level matching split is not proof of
 an original object-file boundary. `PlayerMovementCounter::update()` is still a non-matching C++
-reconstruction because dependency method implementations are unresolved. The optional assembly
-version can reproduce the original US bytes, but is not a source-level compiler match.
+reconstruction because dependency method implementations are unresolved. Track it as fuzzy
+until the compiler-generated source matches the original.
