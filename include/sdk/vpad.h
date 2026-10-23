@@ -1,11 +1,11 @@
 #pragma once
 
-#if defined(__GNUC__) || defined(__clang__)
-#include <vpad/input.h>
-#else
 #include "types.h"
 
-enum VPADChan { VPAD_CHAN_0 = 0, VPAD_CHAN_1 = 1 };
+enum VPADChan {
+    VPAD_CHAN_0 = 0,
+    VPAD_CHAN_1 = 1
+};
 
 enum VPADReadError {
     VPAD_READ_SUCCESS = 0,
@@ -50,4 +50,3 @@ extern "C"
     void VPADGetTPCalibratedPoint(VPADChan channel, VPADTouchData* calibrated,
                                   const VPADTouchData* raw);
 }
-#endif

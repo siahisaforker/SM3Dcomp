@@ -1,21 +1,22 @@
 #pragma once
 
-#if defined(__GNUC__) || defined(__clang__)
-#include <coreinit/cache.h>
-#include <coreinit/core.h>
-#include <coreinit/dynload.h>
-#include <coreinit/memory.h>
-#include <coreinit/time.h>
-#else
 #include "types.h"
+#include "sdk/coreinit/filesystem.h"
+#include "sdk/coreinit/heap.h"
+#include "sdk/coreinit/default_heap.h"
+#include "sdk/coreinit/sync.h"
+#include "sdk/coreinit/thread.h"
+#include "sdk/coreinit/time.h"
+#include "sdk/coreinit/alarm.h"
+#include "sdk/coreinit/interrupts.h"
 
 typedef void* OSDynLoad_Module;
 typedef sm3d::u32 OSDynLoad_Error;
 
-enum OSDynLoad_ExportType { OS_DYNLOAD_EXPORT_FUNC = 0, OS_DYNLOAD_EXPORT_DATA = 1 };
-
-typedef sm3d::s32 OSTick;
-typedef sm3d::s64 OSTime;
+enum OSDynLoad_ExportType {
+    OS_DYNLOAD_EXPORT_FUNC = 0,
+    OS_DYNLOAD_EXPORT_DATA = 1
+};
 
 extern "C"
 {
@@ -38,4 +39,3 @@ extern "C"
     OSDynLoad_Error OSDynLoad_FindExport(OSDynLoad_Module module, OSDynLoad_ExportType type,
                                          const char* name, void** address);
 }
-#endif

@@ -1,12 +1,11 @@
 #pragma once
 
-#if defined(__GNUC__) || defined(__clang__)
-#include <gx2/draw.h>
-#include <gx2/event.h>
-#include <gx2/registers.h>
-#include <gx2/state.h>
-#else
 #include "types.h"
+#include "sdk/gx2/types.h"
+#include "sdk/gx2/display.h"
+#include "sdk/gx2/shaders.h"
+#include "sdk/gx2/texture.h"
+#include "sdk/gx2/sampler.h"
 
 enum GX2PrimitiveMode {
     GX2_PRIMITIVE_MODE_POINTS = 1,
@@ -42,4 +41,3 @@ extern "C"
     void GX2SetScissor(sm3d::u32 x, sm3d::u32 y, sm3d::u32 width, sm3d::u32 height);
     void GX2SetViewport(float x, float y, float width, float height, float nearZ, float farZ);
 }
-#endif
